@@ -11,7 +11,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { useProducts } from "@/hooks/useContent";
 import { SectionHeading } from "@/components/common/SectionHeading";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router-dom";
+
 
 const Index = () => {
   const { data: featured, isLoading } = useProducts({ featured: true, limit: 8 });
