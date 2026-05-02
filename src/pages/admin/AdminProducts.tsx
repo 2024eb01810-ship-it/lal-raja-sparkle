@@ -23,6 +23,7 @@ const empty = {
   metal: "", weight_grams: "" as any, occasion: "", stones: "",
   price_min: "" as any, price_max: "" as any,
   images: [""], featured: false, active: true,
+  whatsapp_number: "", phone_number: "", enquiry_message: "",
 };
 
 export default function AdminProducts() {
@@ -54,6 +55,9 @@ export default function AdminProducts() {
       price_max: editing.price_max === "" ? null : Number(editing.price_max),
       category_id: editing.category_id || null,
       collection_id: editing.collection_id || null,
+      whatsapp_number: editing.whatsapp_number?.trim() || null,
+      phone_number: editing.phone_number?.trim() || null,
+      enquiry_message: editing.enquiry_message?.trim() || null,
     };
     if (!payload.id) delete payload.id;
     await upsert.mutateAsync(payload);
@@ -174,6 +178,40 @@ export default function AdminProducts() {
                   <Button type="button" variant="outline" size="sm" onClick={() => setEditing({ ...editing, images: [...editing.images, ""] })}>
                     + Add another image
                   </Button>
+                </div>
+              </div>
+
+              <div className="border-t border-border pt-4 space-y-3">
+                <div>
+                  <p className="text-sm font-medium">Contact CTAs (optional)</p>
+                  <p className="text-xs text-muted-foreground">Leave blank to use the store-wide defaults.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>WhatsApp number</Label>
+                    <Input
+                      placeholder="918184839498"
+                      value={editing.whatsapp_number ?? ""}
+                      onChange={(e) => setEditing({ ...editing, whatsapp_number: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phone number</Label>
+                    <Input
+                      placeholder="+918184839498"
+                      value={editing.phone_number ?? ""}
+                      onChange={(e) => setEditing({ ...editing, phone_number: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Prefilled WhatsApp message</Label>
+                  <Textarea
+                    rows={2}
+                    placeholder={`Hello Lal Raja Gold And Diamond Jewellery, I'd like to enquire about "${editing.name || "this piece"}".`}
+                    value={editing.enquiry_message ?? ""}
+                    onChange={(e) => setEditing({ ...editing, enquiry_message: e.target.value })}
+                  />
                 </div>
               </div>
 

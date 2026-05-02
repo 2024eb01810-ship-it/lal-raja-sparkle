@@ -5,7 +5,7 @@ import { Seo } from "@/components/common/Seo";
 import { useProduct, useProducts } from "@/hooks/useContent";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { phoneLink, productEnquiryLink } from "@/lib/whatsapp";
+import { productEnquiryLink, productPhoneLink } from "@/lib/whatsapp";
 import { priceRange } from "@/lib/format";
 
 export default function ProductPage() {
@@ -93,14 +93,17 @@ export default function ProductPage() {
 
             <div className="grid sm:grid-cols-2 gap-3">
               <a
-                href={productEnquiryLink(product.name, product.slug)}
+                href={productEnquiryLink(product.name, product.slug, {
+                  number: (product as any).whatsapp_number,
+                  message: (product as any).enquiry_message,
+                })}
                 target="_blank"
                 rel="noreferrer"
                 className="luxury-btn bg-[#25D366] text-white hover:opacity-90"
               >
                 <MessageCircle className="w-4 h-4" /> Enquire on WhatsApp
               </a>
-              <a href={phoneLink} className="luxury-btn border border-foreground text-foreground">
+              <a href={productPhoneLink((product as any).phone_number)} className="luxury-btn border border-foreground text-foreground">
                 <Phone className="w-4 h-4" /> Call Now
               </a>
             </div>
