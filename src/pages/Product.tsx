@@ -5,7 +5,7 @@ import { Seo } from "@/components/common/Seo";
 import { useProduct, useProducts } from "@/hooks/useContent";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { phoneLink, productEnquiryLink } from "@/lib/whatsapp";
+import { productEnquiryLink, productPhoneLink } from "@/lib/whatsapp";
 import { priceRange } from "@/lib/format";
 
 export default function ProductPage() {
