@@ -55,6 +55,9 @@ export default function AdminProducts() {
       price_max: editing.price_max === "" ? null : Number(editing.price_max),
       category_id: editing.category_id || null,
       collection_id: editing.collection_id || null,
+      whatsapp_number: editing.whatsapp_number?.trim() || null,
+      phone_number: editing.phone_number?.trim() || null,
+      enquiry_message: editing.enquiry_message?.trim() || null,
     };
     if (!payload.id) delete payload.id;
     await upsert.mutateAsync(payload);
