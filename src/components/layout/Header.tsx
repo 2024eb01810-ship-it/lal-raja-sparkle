@@ -150,13 +150,13 @@ export function Header() {
 
       {/* Row 2 — White nav bar (desktop) */}
       <div className="hidden lg:block bg-background border-b border-border">
-        <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-4 h-12">
-          <nav className="flex items-center gap-6 xl:gap-8 min-w-0">
+        <div className="container-px mx-auto max-w-7xl flex items-center gap-4 h-12">
+          <nav className="flex items-center gap-4 xl:gap-7 min-w-0 flex-1 overflow-x-auto scrollbar-hide">
             {NAV.map((n) => (
               <NavLink
                 key={n.to} to={n.to} end={n.to === "/"}
                 className={({ isActive }) =>
-                  `text-[12px] xl:text-[13px] font-medium tracking-wide transition-colors hover:text-brand whitespace-nowrap ${
+                  `text-[12px] xl:text-[13px] font-medium tracking-wide transition-colors hover:text-brand whitespace-nowrap shrink-0 ${
                     isActive ? "text-brand" : "text-foreground/85"
                   }`
                 }
@@ -166,13 +166,18 @@ export function Header() {
             ))}
           </nav>
           <div className="flex items-center gap-3 shrink-0">
-            <span className="text-[12px] flex items-center gap-2">
+            <span className="text-[12px] hidden 2xl:flex items-center gap-2">
               <span className="inline-block w-2 h-2 rounded-full bg-gold" aria-hidden />
               <span className="text-muted-foreground">Live Gold Rate:</span>
               <span className="font-semibold text-brand">₹—/g (22kt)</span>
             </span>
-            <Link to="/store" className="inline-flex items-center gap-1.5 text-[12px] font-medium border border-border rounded-full px-3 py-1 hover:border-brand hover:text-brand transition-colors">
-              <MapPin className="w-3.5 h-3.5" /> Set Location
+            {/* Compact gold rate for lg & xl */}
+            <span className="text-[12px] 2xl:hidden flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-gold" aria-hidden />
+              <span className="font-semibold text-brand whitespace-nowrap">₹—/g</span>
+            </span>
+            <Link to="/store" className="inline-flex items-center gap-1.5 text-[12px] font-medium border border-border rounded-full px-3 py-1 hover:border-brand hover:text-brand transition-colors whitespace-nowrap">
+              <MapPin className="w-3.5 h-3.5" /> <span className="hidden 2xl:inline">Set Location</span><span className="2xl:hidden">Location</span>
             </Link>
           </div>
         </div>
