@@ -12,26 +12,29 @@ const ITEMS = [
 export function BottomNav() {
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-blur border-t border-border"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="md:hidden fixed bottom-0 inset-x-0 z-bottom-nav glass-blur border-t border-border"
+      style={{
+        height: "var(--bottom-nav-total)",
+        paddingBottom: "var(--safe-bottom)",
+      }}
       aria-label="Mobile navigation"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-5 h-[var(--bottom-nav-h)]">
         {ITEMS.map((it) => (
-          <li key={it.to}>
+          <li key={it.to} className="min-w-0">
             <NavLink
               to={it.to}
               end={it.end}
               className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] tracking-wide uppercase ${
+                `flex flex-col items-center justify-center gap-1 h-full px-1 text-[10px] tracking-wide uppercase truncate ${
                   isActive ? "text-gold" : "text-foreground/70"
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <it.icon className={`w-5 h-5 ${isActive ? "stroke-[2.5]" : ""}`} />
-                  <span>{it.label}</span>
+                  <it.icon className={`w-5 h-5 shrink-0 ${isActive ? "stroke-[2.5]" : ""}`} />
+                  <span className="truncate w-full text-center">{it.label}</span>
                 </>
               )}
             </NavLink>

@@ -152,6 +152,34 @@
 
 .animate-fade-up { animation: fade-up 0.7s var(--ease-luxury) both; }
 
-/* mobile bottom nav safe area */
-.pb-bottom-nav { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
-@media (min-width: 768px) { .pb-bottom-nav { padding-bottom: 0; } }
+/* Mobile bottom nav: a single source of truth for height + safe-area inset.
+   Using these vars guarantees the FAB, page content, and footer never collide
+   with the nav on any Android/iPhone screen (notch, home indicator, gesture bar). */
+:root {
+  --bottom-nav-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bottom-nav-total: calc(var(--bottom-nav-h) + var(--safe-bottom));
+
+  /* Semantic z-index scale — keep all stacking decisions here */
+  --z-base: 1;
+  --z-sticky: 30;        /* announcement ticker */
+  --z-header: 40;        /* sticky header */
+  --z-bottom-nav: 45;    /* mobile bottom nav */
+  --z-fab: 50;           /* floating action button (above bottom nav) */
+  --z-mobile-menu: 55;   /* slide-down nav menu */
+  --z-overlay: 60;       /* dialogs, sheets, drawers */
+  --z-toast: 100;
+}
+
+@media (min-width: 768px) {
+  :root { --bottom-nav-h: 0px; --bottom-nav-total: 0px; }
+}
+
+.pb-bottom-nav { padding-bottom: var(--bottom-nav-total); }
+.bottom-nav-offset { bottom: var(--bottom-nav-total); }
+
+.z-header { z-index: var(--z-header); }
+.z-bottom-nav { z-index: var(--z-bottom-nav); }
+.z-fab { z-index: var(--z-fab); }
+.z-mobile-menu { z-index: var(--z-mobile-menu); }
+
