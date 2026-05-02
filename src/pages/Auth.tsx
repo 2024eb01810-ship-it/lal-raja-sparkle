@@ -86,19 +86,24 @@ export default function Auth() {
     const e = emailSchema.safeParse(email);
     if (!e.success) return toast.error(e.error.issues[0].message);
     setBusy(true);
-    // shouldCreateUser:false because the account already exists (created in signUp)
-    const { error } = await supabase.auth.signInWithOtp({
+    // Resend the signup confirmation email (which contains the 6-digit OTP).
+    const { error } = await supabase.auth.resend({
+      type: "signup",
       email: e.data,
-      options: { shouldCreateUser: false },
+      options: { emailRedirectTo: `${window.location.origin}/` },
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message || "Could not send the code");
+      if (/rate.*limit|after \d+ second/i.test(error.message)) {
+        toast.error("Please wait a minute before requesting another code.");
+      } else {
+        toast.error(error.message || "Could not send the code");
+      }
       return;
     }
     toast.success(`Code sent to ${e.data}`);
     setStep("otp");
-    setResendIn(30);
+    setResendIn(60);
   };
 
   const signUp = async () => {
