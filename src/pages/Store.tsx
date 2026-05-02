@@ -19,7 +19,7 @@ export default function StorePage() {
 
   return (
     <>
-      <Seo title="Visit Our Store — Lal Raja Jewels, Vijayawada" description="Visit our flagship jewellery store in Vijayawada, Andhra Pradesh." jsonLd={jsonLd ?? undefined} />
+      <Seo title="Visit Our Store — Lal Raja Gold And Diamond Jewellery, Vijayawada" description="Visit our flagship jewellery store in Vijayawada, Andhra Pradesh." jsonLd={jsonLd ?? undefined} />
       <section className="container-px max-w-7xl mx-auto py-12 md:py-16">
         <SectionHeading eyebrow="Visit Us" title="Our Vijayawada Flagship" telugu="మా దుకాణం" />
 

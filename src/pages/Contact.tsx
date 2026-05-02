@@ -42,13 +42,13 @@ export default function ContactPage() {
 
   return (
     <>
-      <Seo title="Contact — Lal Raja Jewels" description="Get in touch with Lal Raja Jewels in Vijayawada via WhatsApp, phone or email." />
+      <Seo title="Contact — Lal Raja Gold And Diamond Jewellery" description="Get in touch with Lal Raja Gold And Diamond Jewellery in Vijayawada via WhatsApp, phone or email." />
       <section className="container-px max-w-6xl mx-auto py-12 md:py-16">
         <SectionHeading eyebrow="Get In Touch" title="We'd love to hear from you" />
 
         <div className="mt-12 grid md:grid-cols-2 gap-10 lg:gap-16">
           <div className="space-y-5">
-            <a href={whatsappLink("Hello Lal Raja Jewels, I have an enquiry.")} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-5 bg-card shadow-soft hover:shadow-card transition-shadow">
+            <a href={whatsappLink("Hello Lal Raja Gold And Diamond Jewellery, I have an enquiry.")} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-5 bg-card shadow-soft hover:shadow-card transition-shadow">
               <div className="w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center"><MessageCircle className="w-5 h-5" /></div>
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-gold">WhatsApp</p>

@@ -18,7 +18,7 @@ const Index = () => {
   return (
     <>
       <Seo
-        title="Lal Raja Jewels — Luxury Gold, Diamond & Bridal Jewellery in Vijayawada"
+        title="Lal Raja Gold And Diamond Jewellery — Luxury Gold, Diamond & Bridal Jewellery in Vijayawada"
         description="Heritage jewellery house in Vijayawada crafting bridal sets, polki, kundan, temple jewellery and certified diamond solitaires."
       />
       <HeroSlideshow />

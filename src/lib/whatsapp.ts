@@ -8,7 +8,7 @@ export function whatsappLink(message: string) {
 export function productEnquiryLink(productName: string, slug?: string) {
   const url = typeof window !== "undefined" ? `${window.location.origin}/product/${slug ?? ""}` : "";
   return whatsappLink(
-    `Hello Lal Raja Jewels, I'd like to enquire about "${productName}".${url ? `\n${url}` : ""}`
+    `Hello Lal Raja Gold And Diamond Jewellery, I'd like to enquire about "${productName}".${url ? `\n${url}` : ""}`
   );
 }
 

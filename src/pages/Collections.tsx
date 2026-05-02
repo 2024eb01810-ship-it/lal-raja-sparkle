@@ -77,7 +77,7 @@ export default function CollectionsPage() {
 
   return (
     <>
-      <Seo title={`${title} — Lal Raja Jewels`} description={`Explore ${title} from Lal Raja Jewels.`} />
+      <Seo title={`${title} — Lal Raja Gold And Diamond Jewellery`} description={`Explore ${title} from Lal Raja Gold And Diamond Jewellery.`} />
       <section className="container-px max-w-7xl mx-auto py-10 md:py-16">
         <SectionHeading eyebrow="Collections" title={title} telugu={activeCat?.telugu_name ?? undefined} />
 

@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="bg-foreground text-background mt-16 md:mt-24 pb-bottom-nav">
       <div className="container-px max-w-7xl mx-auto py-12 md:py-16 grid gap-10 md:grid-cols-4">
         <div>
-          <h3 className="font-serif text-2xl mb-2">Lal Raja Jewels</h3>
+          <h3 className="font-serif text-2xl mb-2">Lal Raja Gold And Diamond Jewellery</h3>
           <p className="telugu text-gold mb-4">లాల్ రాజా ఆభరణాలు</p>
           <p className="text-sm text-background/70 leading-relaxed">
             Crafting timeless jewellery in Vijayawada with heritage, honesty and artistry.
@@ -44,7 +44,7 @@ export function Footer() {
       </div>
       <div className="border-t border-background/10">
         <div className="container-px max-w-7xl mx-auto py-5 text-xs text-background/50 flex flex-col md:flex-row justify-between gap-2">
-          <span>© {new Date().getFullYear()} Lal Raja Jewels. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Lal Raja Gold And Diamond Jewellery. All rights reserved.</span>
           <span>Vijayawada, Andhra Pradesh, India</span>
         </div>
       </div>
