@@ -3,10 +3,29 @@ import { Link } from "react-router-dom";
 import { useBanners } from "@/hooks/useContent";
 import { Skeleton } from "@/components/ui/skeleton";
 
+const FALLBACK = {
+  id: "fallback",
+  image_url: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1920",
+  title: "Heritage in every hallmark",
+  subtitle:
+    "Bridal sets, polki, kundan and certified diamonds — handcrafted in Vijayawada since 1972.",
+  cta_label: "Explore Collections",
+  cta_link: "/collections",
+} as const;
+
 export function HeroSlideshow() {
-  const { data: banners, isLoading } = useBanners();
+  const { data: banners, isLoading, isError } = useBanners();
   const [idx, setIdx] = useState(0);
   const [scrollY, setScrollY] = useState(0);
+  // Delayed skeleton: only show after 250ms so fast networks don't flash a
+  // grey block, but slow 3G/4G users still see clear loading feedback.
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) { setShowSkeleton(false); return; }
+    const t = setTimeout(() => setShowSkeleton(true), 250);
+    return () => clearTimeout(t);
+  }, [isLoading]);
 
   useEffect(() => {
     if (!banners || banners.length < 2) return;
@@ -20,39 +39,23 @@ export function HeroSlideshow() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (isLoading) return <Skeleton className="w-full h-[70vh] md:h-[85vh]" />;
-  if (!banners || banners.length === 0) {
+  // Reserve hero height during loading so layout never shifts.
+  if (isLoading) {
     return (
-      <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1920"
-          alt="Lal Raja Jewels"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-hero-overlay" />
-        <div className="absolute inset-0 flex items-end md:items-center">
-          <div className="container-px max-w-7xl mx-auto pb-16 md:pb-0">
-            <div className="max-w-xl text-background animate-fade-up">
-              <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">Lal Raja Jewels</p>
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-medium leading-[1.05] mb-4">
-                Heritage in every hallmark
-              </h1>
-              <p className="text-base md:text-lg text-background/85 mb-7 max-w-md">
-                Bridal sets, polki, kundan and certified diamonds — handcrafted in Vijayawada since 1972.
-              </p>
-              <Link to="/collections" className="luxury-btn text-foreground bg-background hover:text-foreground">
-                Explore Collections
-              </Link>
-            </div>
-          </div>
-        </div>
+      <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden bg-secondary">
+        {showSkeleton && <Skeleton className="absolute inset-0 w-full h-full" />}
       </section>
     );
   }
 
+  // Fallback: shown when banners fail to load OR are empty so the page is
+  // never blank above the fold.
+  const slides: any[] =
+    !isError && banners && banners.length > 0 ? banners : [FALLBACK];
+
   return (
-    <section className="relative w-full h-[78vh] md:h-[88vh] overflow-hidden">
-      {banners.map((b, i) => (
+    <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden">
+      {slides.map((b, i) => (
         <div
           key={b.id}
           className={`absolute inset-0 transition-opacity duration-[1500ms] ${
@@ -61,7 +64,7 @@ export function HeroSlideshow() {
         >
           <img
             src={b.image_url}
-            alt={b.title ?? "Lal Raja Jewels"}
+            alt={b.title ?? "Lal Raja Gold And Diamond Jewellery"}
             className="w-full h-full object-cover"
             style={{ transform: `translateY(${scrollY * 0.25}px) scale(1.05)` }}
             loading={i === 0 ? "eager" : "lazy"}
@@ -69,9 +72,11 @@ export function HeroSlideshow() {
           />
           <div className="absolute inset-0 bg-gradient-hero-overlay" />
           <div className="absolute inset-0 flex items-end md:items-center">
-            <div className="container-px max-w-7xl mx-auto pb-16 md:pb-0">
+            <div className="container-px max-w-7xl mx-auto pb-16 md:pb-0 w-full">
               <div className="max-w-xl text-background animate-fade-up">
-                <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">Lal Raja Jewels</p>
+                <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">
+                  Lal Raja Gold &amp; Diamond Jewellery
+                </p>
                 <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-medium leading-[1.05] mb-4">
                   {b.title}
                 </h1>
@@ -91,17 +96,18 @@ export function HeroSlideshow() {
           </div>
         </div>
       ))}
-      {/* dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {banners.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIdx(i)}
-            aria-label={`Slide ${i + 1}`}
-            className={`h-1 transition-all ${i === idx ? "w-10 bg-gold" : "w-5 bg-background/50"}`}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setIdx(i)}
+              aria-label={`Slide ${i + 1}`}
+              className={`h-1 transition-all ${i === idx ? "w-10 bg-gold" : "w-5 bg-background/50"}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
