@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { phoneLink, whatsappLink } from "@/lib/whatsapp";
+import { useAuth } from "@/hooks/useAuth";
 
 const NAV = [
   { to: "/collections", label: "All Jewellery", Icon: Gem },
@@ -37,6 +38,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const accountLabel = user?.user_metadata?.full_name || user?.phone || user?.email || "";
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -116,7 +119,7 @@ export function Header() {
             >
               <MessageCircle className="w-4 h-4" />
             </a>
-            <Link to="/contact" aria-label="Account" className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10">
+            <Link to={user ? "/" : "/auth"} aria-label={user ? "My account" : "Sign in"} className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10">
               <User className="w-5 h-5" />
             </Link>
           </div>
@@ -213,13 +216,31 @@ export function Header() {
 
             {/* Sign in pill */}
             <div className="px-5 pb-4 shrink-0">
-              <Link
-                to="/contact"
-                onClick={() => setOpen(false)}
-                className="inline-flex items-center gap-2 border border-brand text-brand rounded-full px-4 py-2 text-sm font-medium hover:bg-brand/5"
-              >
-                Sign In / Register <ArrowRight className="w-4 h-4" />
-              </Link>
+              {user ? (
+                <div className="flex items-center justify-between gap-3 border border-border rounded-full pl-4 pr-2 py-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand/10 text-brand">
+                      <User className="w-4 h-4" />
+                    </span>
+                    <span className="text-sm font-medium truncate">{accountLabel}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => { await signOut(); setOpen(false); }}
+                    className="text-xs font-medium text-brand px-3 py-1.5 rounded-full hover:bg-brand/5"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center gap-2 border border-brand text-brand rounded-full px-4 py-2 text-sm font-medium hover:bg-brand/5"
+                >
+                  Sign In / Register <ArrowRight className="w-4 h-4" />
+                </Link>
+              )}
             </div>
 
             {/* Scrollable content */}
