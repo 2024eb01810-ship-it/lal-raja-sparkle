@@ -148,6 +148,17 @@
   to { transform: translateX(-50%); }
 }
 
+/* Continuous, perfectly smooth horizontal marquee — used by Lal Raja Promise.
+   Track is rendered twice; translating -50% loops back to the original frame
+   without any visible jump. Pauses on hover for accessibility. */
+.promise-marquee {
+  animation: marquee linear infinite;
+}
+.group:hover .promise-marquee { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .promise-marquee { animation: none; }
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
