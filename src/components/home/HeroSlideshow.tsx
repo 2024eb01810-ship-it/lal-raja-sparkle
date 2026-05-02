@@ -32,7 +32,7 @@ export function HeroSlideshow() {
 
   if (isLoading) {
     return (
-      <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-secondary">
+      <section className="relative w-full h-[42vh] md:h-[80vh] overflow-hidden bg-secondary">
         {showSkeleton && <Skeleton className="absolute inset-0 w-full h-full" />}
       </section>
     );
@@ -43,7 +43,7 @@ export function HeroSlideshow() {
 
   return (
     <section className="relative w-full overflow-hidden bg-foreground">
-      <div className="relative w-full h-[60vh] md:h-[80vh]">
+      <div className="relative w-full h-[42vh] md:h-[80vh]">
         {slides.map((b, i) => (
           <div
             key={b.id}
