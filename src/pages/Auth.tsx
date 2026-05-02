@@ -133,8 +133,12 @@ export default function Auth() {
       return;
     }
     trackEvent("sign_up", { method: "email" });
-    // Now send the 6-digit OTP for verification
-    await sendOtp();
+    // Supabase signUp already sent the confirmation email containing the
+    // 6-digit OTP code. Don't call signInWithOtp here — it would hit the
+    // 60-second rate limit. Just move to the OTP entry screen.
+    toast.success(`Code sent to ${e.data}`);
+    setStep("otp");
+    setResendIn(60);
   };
 
   const verifyOtp = async () => {
