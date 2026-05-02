@@ -10,6 +10,9 @@ export const useBanners = () =>
       if (error) throw error;
       return data;
     },
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
+    staleTime: 60_000,
   });
 
 export const useCategories = () =>
