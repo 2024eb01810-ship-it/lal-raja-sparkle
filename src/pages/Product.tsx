@@ -24,7 +24,7 @@ export default function ProductPage() {
   }
   if (!product) return <div className="container-px py-20 text-center">Product not found.</div>;
 
-  const images: string[] = Array.isArray(product.images) ? product.images : [];
+  const images: string[] = Array.isArray(product.images) ? (product.images as unknown as string[]) : [];
   const enquireMsg = `Hello Lal Raja Jewels, I'd like to enquire about "${product.name}".`;
 
   const jsonLd = {
