@@ -58,7 +58,7 @@ export default function AdminLogin() {
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
             </Button>
-            {user && !isStaff && (
+            {user && !authLoading && !isStaff && (
               <p className="text-xs text-destructive text-center">
                 You are signed in but have no staff role. Ask an admin to grant you access.
               </p>
