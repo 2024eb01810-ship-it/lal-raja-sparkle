@@ -31,34 +31,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. listener FIRST so we don't miss events
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+    let cancelled = false;
+
+    async function loadRoles(uid: string) {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", uid);
+      if (cancelled) return;
+      if (error) {
+        console.error("[useAuth] failed to load roles:", error);
+        setRoles([]);
+      } else {
+        setRoles((data ?? []).map((r: any) => r.role as Role));
+      }
+      setLoading(false);
+    }
+
+    function applySession(sess: Session | null) {
       setSession(sess);
       setUser(sess?.user ?? null);
-      // Defer Supabase calls to avoid deadlocks inside the callback
       if (sess?.user) {
-        setTimeout(() => fetchRoles(sess.user!.id), 0);
+        // Defer to avoid Supabase deadlock inside the listener callback.
+        setTimeout(() => loadRoles(sess.user!.id), 0);
       } else {
         setRoles([]);
+        setLoading(false);
       }
+    }
+
+    // 1) Subscribe FIRST so we never miss an event.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+      // Re-enter loading until the next role fetch completes so guards don't
+      // make a decision on stale roles from a prior account.
+      setLoading(true);
+      applySession(sess);
     });
 
-    // 2. then read existing session
+    // 2) Then read the existing session.
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      if (sess?.user) fetchRoles(sess.user.id).finally(() => setLoading(false));
-      else setLoading(false);
+      applySession(sess);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
-
-  async function fetchRoles(uid: string) {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles((data ?? []).map((r: any) => r.role as Role));
-    setLoading(false);
-  }
 
   async function signOut() {
     await supabase.auth.signOut();
