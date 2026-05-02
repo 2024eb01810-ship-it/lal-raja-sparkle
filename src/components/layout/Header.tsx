@@ -33,27 +33,31 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-500 ${
+      className={`sticky top-0 z-header transition-all duration-500 ${
         scrolled ? "glass-blur shadow-soft" : "bg-background"
       }`}
     >
-      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-4 lg:gap-8 h-16 md:h-20">
-        <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Jewels home">
-          <img src={logo} alt="Lal Raja Jewels" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
-          <span className="flex flex-col leading-none min-w-0">
-            <span className="font-serif text-base sm:text-lg md:text-xl font-medium tracking-wide truncate">Lal Raja</span>
-            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-gold">Jewels</span>
+      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-3 lg:gap-6 h-16 md:h-20">
+        <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Gold And Diamond Jewellery — home">
+          <img src={logo} alt="Lal Raja Gold And Diamond Jewellery" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
+          <span className="flex flex-col leading-none min-w-0 max-w-[150px] sm:max-w-[220px] md:max-w-none">
+            <span className="font-serif text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-wide truncate">
+              Lal Raja
+            </span>
+            <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-gold truncate">
+              Gold &amp; Diamond Jewellery
+            </span>
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-1 justify-center min-w-0">
+        <nav className="hidden lg:flex items-center gap-3 xl:gap-6 flex-1 justify-center min-w-0 px-2">
           {NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
-                `text-[11px] xl:text-xs uppercase tracking-[0.15em] xl:tracking-[0.2em] transition-colors hover:text-gold whitespace-nowrap ${
+                `text-[10px] xl:text-xs uppercase tracking-[0.1em] xl:tracking-[0.18em] transition-colors hover:text-gold whitespace-nowrap ${
                   isActive ? "text-gold" : "text-foreground/80"
                 }`
               }
@@ -67,12 +71,12 @@ export function Header() {
           <a
             href={phoneLink}
             aria-label="Call store"
-            className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
+            className="hidden sm:inline-flex lg:hidden xl:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
           >
             <Phone className="w-4 h-4" />
           </a>
           <a
-            href={whatsappLink("Hello Lal Raja Jewels, I have an enquiry.")}
+            href={whatsappLink("Hello Lal Raja Gold And Diamond Jewellery, I have an enquiry.")}
             target="_blank"
             rel="noreferrer"
             aria-label="WhatsApp"
@@ -92,9 +96,9 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile / tablet menu */}
+      {/* Mobile / tablet menu — sits above page, below overlays */}
       {open && (
-        <div className="lg:hidden border-t border-border bg-background animate-fade-in">
+        <div className="lg:hidden border-t border-border bg-background animate-fade-in z-mobile-menu relative shadow-soft max-h-[calc(100dvh-4rem)] overflow-y-auto">
           <nav className="container-px mx-auto max-w-7xl py-4 flex flex-col">
             {NAV.map((n) => (
               <NavLink

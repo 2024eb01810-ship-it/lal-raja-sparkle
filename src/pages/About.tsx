@@ -5,7 +5,7 @@ import { Award, Gem, Users, ShieldCheck } from "lucide-react";
 export default function AboutPage() {
   return (
     <>
-      <Seo title="About — Lal Raja Jewels" description="Three generations of jewellery craftsmanship in Vijayawada." />
+      <Seo title="About — Lal Raja Gold And Diamond Jewellery" description="Three generations of jewellery craftsmanship in Vijayawada." />
       <section className="relative h-[45vh] md:h-[60vh] overflow-hidden">
         <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1920" alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-foreground/55" />

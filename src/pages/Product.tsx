@@ -25,7 +25,7 @@ export default function ProductPage() {
   if (!product) return <div className="container-px py-20 text-center">Product not found.</div>;
 
   const images: string[] = Array.isArray(product.images) ? (product.images as unknown as string[]) : [];
-  const enquireMsg = `Hello Lal Raja Jewels, I'd like to enquire about "${product.name}".`;
+  const enquireMsg = `Hello Lal Raja Gold And Diamond Jewellery, I'd like to enquire about "${product.name}".`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -44,7 +44,7 @@ export default function ProductPage() {
 
   return (
     <>
-      <Seo title={`${product.name} — Lal Raja Jewels`} description={product.description ?? undefined} jsonLd={jsonLd} />
+      <Seo title={`${product.name} — Lal Raja Gold And Diamond Jewellery`} description={product.description ?? undefined} jsonLd={jsonLd} />
       <div className="container-px max-w-7xl mx-auto py-6 md:py-10">
         <Link to="/collections" className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.25em] text-muted-foreground hover:text-gold mb-6">
           <ChevronLeft className="w-3 h-3" /> Back

@@ -8,7 +8,7 @@ export default function OffersPage() {
   const { data, isLoading } = useOffers();
   return (
     <>
-      <Seo title="Offers & Promotions — Lal Raja Jewels" description="Festive specials, bridal bonuses and gold exchange offers at Lal Raja Jewels." />
+      <Seo title="Offers & Promotions — Lal Raja Gold And Diamond Jewellery" description="Festive specials, bridal bonuses and gold exchange offers at Lal Raja Gold And Diamond Jewellery." />
       <section className="container-px max-w-7xl mx-auto py-12 md:py-16">
         <SectionHeading eyebrow="Limited Time" title="Current Offers" subtitle="Festive specials and exclusive in-store bonuses." />
         <div className="mt-12 grid md:grid-cols-2 gap-6 md:gap-8">

@@ -39,8 +39,8 @@ export default function CertificationsPage() {
   return (
     <>
       <Seo
-        title="Certifications & Trust — Lal Raja Jewels"
-        description="BIS Hallmarked gold, IGI & GIA certified diamonds, transparent invoicing and lifetime maintenance from Lal Raja Jewels, Vijayawada."
+        title="Certifications & Trust — Lal Raja Gold And Diamond Jewellery"
+        description="BIS Hallmarked gold, IGI & GIA certified diamonds, transparent invoicing and lifetime maintenance from Lal Raja Gold And Diamond Jewellery, Vijayawada."
       />
 
       <section className="relative h-[40vh] md:h-[55vh] overflow-hidden">
@@ -87,7 +87,7 @@ export default function CertificationsPage() {
             {[
               { n: "01", t: "BIS Logo", d: "The triangular BIS mark confirms certified purity testing." },
               { n: "02", t: "Purity Grade", d: "916 for 22K, 750 for 18K, 585 for 14K gold." },
-              { n: "03", t: "Jeweller's Mark", d: "Our unique identification, traceable to Lal Raja Jewels." },
+              { n: "03", t: "Jeweller's Mark", d: "Our unique identification, traceable to Lal Raja Gold And Diamond Jewellery." },
             ].map((s) => (
               <div key={s.n} className="bg-card p-6 shadow-soft">
                 <p className="text-xs tracking-[0.3em] text-gold mb-2">{s.n}</p>
