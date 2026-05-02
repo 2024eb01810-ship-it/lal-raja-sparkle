@@ -1,41 +1,39 @@
-# Add Firebase Analytics alongside Lovable Cloud
+# Make nagadurga20054@gmail.com a full admin
 
-You chose **"Add Firebase ALONGSIDE Cloud"**, so this plan keeps your existing Google login (which already stores users in Lovable Cloud / Supabase `profiles`) **untouched** and only wires Firebase in for **Analytics tracking**.
+## Current state
+A lookup in the backend shows **no account exists** yet for `nagadurga20054@gmail.com` — neither in the auth users table nor in profiles. So we need to (1) create the account, then (2) grant it the `admin` role, which gives full control over every admin section (Products, Categories, Collections, Banners, Offers, Testimonials, Store Info, Appointments, Enquiries, and the admin-only Users & Roles page).
 
-Important: Firebase Analytics does **not** create user accounts. Your Firebase config has no auth domain enabled for Google login in your code, and your `/auth` page already does Google sign-in via Lovable Cloud. Mixing a second Google sign-in into Firebase would create duplicate accounts that can't talk to your Supabase `profiles`, RLS, or admin panel — that's why we're only adding Analytics here.
+The existing role system already supports this: `has_role(uid, 'admin')` and `is_staff(uid)` gate every staff-only RLS policy, and the admin layout shows the "Users & Roles" nav item only to admins.
 
-## What gets built
+## Plan
 
-1. **Install Firebase SDK**
-   - `bun add firebase`
+1. **Create the auth user** via a one-off migration that calls Supabase's internal account creation, with:
+   - email: `nagadurga20054@gmail.com`
+   - password: `8074992074`
+   - email auto-confirmed (so they can sign in immediately, no OTP needed for this seeded admin)
+   The existing `handle_new_user` trigger will auto-create the matching `profiles` row.
+   
+   If the trigger isn't currently attached to `auth.users` (the schema dump shows no triggers), the migration will also insert the profile row directly as a fallback.
 
-2. **New file: `src/integrations/firebase/client.ts`**
-   - Initializes the Firebase app with your provided config.
-   - Initializes `getAnalytics(app)` only in the browser (guarded for SSR/build safety with `isSupported()` from `firebase/analytics`).
-   - Exports `app` and `analytics` for optional later use.
+2. **Grant the `admin` role** by inserting into `public.user_roles`:
+   ```
+   (user_id = <new uid>, role = 'admin')
+   ```
+   This unlocks: full read/write on all content tables, the Users & Roles page, and the ability to grant/revoke roles for other staff.
 
-3. **Wire it into the app**
-   - Import the client once at app entry (`src/main.tsx`) so Analytics initializes on page load.
-   - No UI changes. No changes to `useAuth`, `/auth` page, or Supabase.
+3. **Verify** by re-querying `profiles` joined with `user_roles` to confirm the admin row exists.
 
-4. **Track Google sign-in success as an Analytics event (optional but useful)**
-   - In `src/pages/Auth.tsx`, after a successful Google sign-in (and after successful OTP verify), fire `logEvent(analytics, 'login', { method: 'google' | 'phone' })`.
-   - This gives you the "Google login happened" signal in Firebase Analytics, while the actual user record stays in Lovable Cloud `profiles` (linked by Supabase `user.id`).
+## How the user signs in afterward
+- Go to `/admin/login`
+- Email: `nagadurga20054@gmail.com`
+- Password: `8074992074`
+- They will land directly in the admin dashboard with full access.
 
-## What is NOT changed
+## Security note
+Seeding a password through a migration is fine for bootstrapping an admin, but the password `8074992074` is weak (looks like a phone number) and is now visible in chat history. Recommended follow-up: have this admin sign in once, then change their password from a "Change password" flow (can be added on request).
 
-- `/auth` page flow (Google + Phone OTP) — unchanged.
-- `useAuth` hook, `profiles` table, `user_roles`, RLS policies, admin panel — unchanged.
-- No Firebase Auth, no Firestore, no second Google sign-in button.
-- Your Firebase API key is a public web key — safe to commit in the client file (same model as `VITE_SUPABASE_PUBLISHABLE_KEY`).
-
-## Files touched
-
-- `package.json` (adds `firebase`)
-- `src/integrations/firebase/client.ts` (new)
-- `src/main.tsx` (one import line)
-- `src/pages/Auth.tsx` (two `logEvent` calls)
-
-## Heads up
-
-If what you actually want is **"users sign in with Google and a user record appears in the Firebase console"**, that requires Firebase **Auth** (not Analytics) and would conflict with your existing Lovable Cloud auth. Tell me and I'll revise the plan to option 4 from my question (Firebase Google login + sync into Supabase). Otherwise approve and I'll implement the Analytics plan above.
+## Technical details
+- Migration uses `INSERT INTO auth.users` with `crypt(password, gen_salt('bf'))` for the encrypted password and sets `email_confirmed_at = now()`, `aud = 'authenticated'`, `role = 'authenticated'`.
+- Followed by `INSERT INTO public.profiles (id, email) ...ON CONFLICT DO NOTHING`.
+- Followed by `INSERT INTO public.user_roles (user_id, role) VALUES (<uid>, 'admin') ON CONFLICT DO NOTHING`.
+- No application code changes needed — the existing `useAuth` hook, `RequireStaff` guard, and `AdminUsers` page already handle admin permissions correctly.
