@@ -122,7 +122,7 @@
 
   .marquee {
     display: flex; gap: 4rem; width: max-content;
-    animation: marquee 40s linear infinite;
+    animation: marquee 90s linear infinite;
   }
 
   .scrollbar-hide::-webkit-scrollbar { display: none; }
