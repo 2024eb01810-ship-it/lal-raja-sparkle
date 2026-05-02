@@ -23,6 +23,7 @@ const empty = {
   metal: "", weight_grams: "" as any, occasion: "", stones: "",
   price_min: "" as any, price_max: "" as any,
   images: [""], featured: false, active: true,
+  whatsapp_number: "", phone_number: "", enquiry_message: "",
 };
 
 export default function AdminProducts() {
