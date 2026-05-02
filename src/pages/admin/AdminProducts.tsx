@@ -181,6 +181,40 @@ export default function AdminProducts() {
                 </div>
               </div>
 
+              <div className="border-t border-border pt-4 space-y-3">
+                <div>
+                  <p className="text-sm font-medium">Contact CTAs (optional)</p>
+                  <p className="text-xs text-muted-foreground">Leave blank to use the store-wide defaults.</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>WhatsApp number</Label>
+                    <Input
+                      placeholder="918184839498"
+                      value={editing.whatsapp_number ?? ""}
+                      onChange={(e) => setEditing({ ...editing, whatsapp_number: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phone number</Label>
+                    <Input
+                      placeholder="+918184839498"
+                      value={editing.phone_number ?? ""}
+                      onChange={(e) => setEditing({ ...editing, phone_number: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Prefilled WhatsApp message</Label>
+                  <Textarea
+                    rows={2}
+                    placeholder={`Hello Lal Raja Gold And Diamond Jewellery, I'd like to enquire about "${editing.name || "this piece"}".`}
+                    value={editing.enquiry_message ?? ""}
+                    onChange={(e) => setEditing({ ...editing, enquiry_message: e.target.value })}
+                  />
+                </div>
+              </div>
+
               <div className="flex gap-6">
                 <label className="flex items-center gap-2"><Switch checked={editing.featured} onCheckedChange={(v) => setEditing({ ...editing, featured: v })} /> Featured</label>
                 <label className="flex items-center gap-2"><Switch checked={editing.active} onCheckedChange={(v) => setEditing({ ...editing, active: v })} /> Active</label>
