@@ -88,11 +88,10 @@ export function Header() {
           </form>
 
           {/* Right icon group */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto">
-            {/* Stores pill — visible on mobile too (Malabar-style) */}
-            <Link to="/store" aria-label="Stores" className="inline-flex items-center gap-1 px-2.5 h-8 rounded-full border border-brand-foreground/40 hover:bg-brand-foreground/10 text-[11px] font-medium lg:hidden">
-              <Store className="w-3.5 h-3.5" />
-              <span>Stores</span>
+          <div className="flex items-center gap-0.5 sm:gap-2 shrink-0 ml-auto -mr-1">
+            {/* Stores — icon-only on mobile (Malabar-style) */}
+            <Link to="/store" aria-label="Stores" className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-brand-foreground/10 lg:hidden">
+              <Store className="w-[18px] h-[18px]" />
             </Link>
             <Link to="/store" aria-label="Stores" className="hidden lg:inline-flex flex-col items-center justify-center px-2 hover:opacity-80">
               <Store className="w-5 h-5" />
@@ -101,15 +100,15 @@ export function Header() {
             <a href={phoneLink} aria-label="Call store" className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10">
               <Phone className="w-4 h-4" />
             </a>
-            {/* Wishlist (mobile + up) */}
+            {/* Wishlist */}
             <Link to="/collections?wishlist=1" aria-label="Wishlist" className="inline-flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full hover:bg-brand-foreground/10">
-              <Heart className="w-5 h-5" />
+              <Heart className="w-[18px] h-[18px] md:w-5 md:h-5" />
             </Link>
-            {/* Bag (mobile + up) */}
+            {/* Bag */}
             <Link to="/collections" aria-label="Bag" className="inline-flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full hover:bg-brand-foreground/10">
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-[18px] h-[18px] md:w-5 md:h-5" />
             </Link>
-            {/* WhatsApp — desktop only (mobile has floating button) */}
+            {/* WhatsApp — desktop only */}
             <a
               href={whatsappLink("Hello Lal Raja, I have an enquiry.")}
               target="_blank" rel="noreferrer" aria-label="WhatsApp"
