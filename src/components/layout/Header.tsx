@@ -40,13 +40,8 @@ export function Header() {
       <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-3 lg:gap-6 h-16 md:h-20">
         <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Gold And Diamond Jewellery — home">
           <img src={logo} alt="Lal Raja Gold And Diamond Jewellery" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
-          <span className="flex flex-col leading-none min-w-0 max-w-[150px] sm:max-w-[220px] md:max-w-none">
-            <span className="font-serif text-sm sm:text-base md:text-lg lg:text-xl font-medium tracking-wide truncate">
-              Lal Raja
-            </span>
-            <span className="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.2em] text-gold truncate">
-              Gold &amp; Diamond Jewellery
-            </span>
+          <span className="font-serif text-base sm:text-lg md:text-xl lg:text-2xl font-medium tracking-wide truncate">
+            Lal Raja
           </span>
         </Link>
 
