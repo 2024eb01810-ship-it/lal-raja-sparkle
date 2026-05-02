@@ -65,7 +65,7 @@ export function Header() {
 
           <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja — home">
             <img src={logo} alt="Lal Raja Gold And Diamond Jewellery" className="h-8 md:h-11 w-auto shrink-0" width={44} height={44} />
-            <span className="hidden md:inline font-serif text-lg md:text-2xl font-medium tracking-wide truncate">
+            <span className="font-serif text-base md:text-2xl font-medium tracking-wide truncate leading-none">
               Lal Raja
             </span>
           </Link>
