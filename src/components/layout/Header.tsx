@@ -37,7 +37,7 @@ export function Header() {
         scrolled ? "glass-blur shadow-soft" : "bg-background"
       }`}
     >
-      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-3 h-16 md:h-20">
+      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-4 lg:gap-8 h-16 md:h-20">
         <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Jewels home">
           <img src={logo} alt="Lal Raja Jewels" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
           <span className="flex flex-col leading-none min-w-0">
@@ -46,14 +46,14 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 min-w-0">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-1 justify-center min-w-0">
           {NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
-                `text-[11px] xl:text-xs uppercase tracking-[0.18em] xl:tracking-[0.2em] transition-colors hover:text-gold whitespace-nowrap ${
+                `text-[11px] xl:text-xs uppercase tracking-[0.15em] xl:tracking-[0.2em] transition-colors hover:text-gold whitespace-nowrap ${
                   isActive ? "text-gold" : "text-foreground/80"
                 }`
               }
