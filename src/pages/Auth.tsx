@@ -2,100 +2,129 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Phone as PhoneIcon } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, MailCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { trackEvent } from "@/integrations/firebase/client";
 import logo from "@/assets/logo.png";
 
-const phoneSchema = z
+const emailSchema = z.string().trim().email({ message: "Enter a valid email" }).max(254);
+const passwordSchema = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters" })
+  .max(72, { message: "Password too long" });
+const nameSchema = z
   .string()
   .trim()
-  .regex(/^[6-9]\d{9}$/, { message: "Enter a valid 10-digit mobile number" });
+  .min(1, { message: "Enter your name" })
+  .max(80, { message: "Name too long" });
 
-const otpSchema = z.string().trim().regex(/^\d{6}$/, { message: "Enter the 6-digit code" });
+type Mode = "signin" | "signup";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [step, setStep] = useState<"phone" | "otp">("phone");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [resendIn, setResendIn] = useState(0);
 
-  // Already logged in → go home
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [signupSent, setSignupSent] = useState(false);
+
+  // Already logged in → home
   useEffect(() => {
     if (!authLoading && user) navigate("/", { replace: true });
   }, [user, authLoading, navigate]);
 
-  // Resend countdown
-  useEffect(() => {
-    if (resendIn <= 0) return;
-    const t = setInterval(() => setResendIn((s) => s - 1), 1000);
-    return () => clearInterval(t);
-  }, [resendIn]);
+  const signIn = async () => {
+    const e = emailSchema.safeParse(email);
+    const p = passwordSchema.safeParse(password);
+    if (!e.success) return toast.error(e.error.issues[0].message);
+    if (!p.success) return toast.error(p.error.issues[0].message);
 
-  const e164 = (raw: string) => `+91${raw.replace(/\D/g, "")}`;
-
-  const sendOtp = async () => {
-    const parsed = phoneSchema.safeParse(phone);
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
-      return;
-    }
     setBusy(true);
-    const { error } = await supabase.auth.signInWithOtp({ phone: e164(parsed.data) });
-    setBusy(false);
-    if (error) {
-      toast.error(error.message || "Could not send OTP. Phone provider may not be enabled.");
-      return;
-    }
-    toast.success("OTP sent to your phone");
-    setStep("otp");
-    setResendIn(30);
-  };
-
-  const verifyOtp = async () => {
-    const parsed = otpSchema.safeParse(otp);
-    if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
-      return;
-    }
-    setBusy(true);
-    const { error } = await supabase.auth.verifyOtp({
-      phone: e164(phone),
-      token: parsed.data,
-      type: "sms",
+    const { error } = await supabase.auth.signInWithPassword({
+      email: e.data,
+      password: p.data,
     });
     setBusy(false);
+
     if (error) {
-      toast.error(error.message || "Invalid or expired code");
+      if (/email.*not.*confirm/i.test(error.message)) {
+        toast.error("Please verify your email first. Check your inbox for the link.");
+      } else {
+        toast.error(error.message || "Could not sign in");
+      }
       return;
     }
-    trackEvent("login", { method: "phone" });
-    toast.success("Welcome to Lal Raja!");
+    trackEvent("login", { method: "email" });
+    toast.success("Welcome back!");
     navigate("/", { replace: true });
   };
 
-  const signInGoogle = async () => {
+  const signUp = async () => {
+    const n = nameSchema.safeParse(fullName);
+    const e = emailSchema.safeParse(email);
+    const p = passwordSchema.safeParse(password);
+    if (!n.success) return toast.error(n.error.issues[0].message);
+    if (!e.success) return toast.error(e.error.issues[0].message);
+    if (!p.success) return toast.error(p.error.issues[0].message);
+
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+    const { data, error } = await supabase.auth.signUp({
+      email: e.data,
+      password: p.data,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: { full_name: n.data },
+      },
     });
-    if (result.error) {
-      setBusy(false);
-      toast.error("Google sign-in failed. Please try again.");
+    setBusy(false);
+
+    if (error) {
+      toast.error(error.message || "Could not create account");
       return;
     }
-    if (result.redirected) {
-      trackEvent("login", { method: "google", stage: "redirect" });
-      return; // browser navigates away
+    trackEvent("sign_up", { method: "email" });
+
+    // If session is null, email confirmation is required.
+    if (!data.session) {
+      setSignupSent(true);
+      toast.success("Check your email to verify your account");
+      return;
     }
-    // tokens received & session set
-    trackEvent("login", { method: "google" });
+    // Edge case: project auto-confirms — drop straight in.
+    toast.success("Account created!");
     navigate("/", { replace: true });
+  };
+
+  const resendVerification = async () => {
+    const e = emailSchema.safeParse(email);
+    if (!e.success) return toast.error(e.error.issues[0].message);
+    setBusy(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: e.data,
+      options: { emailRedirectTo: `${window.location.origin}/` },
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message || "Could not resend email");
+    toast.success("Verification email sent again");
+  };
+
+  const forgotPassword = async () => {
+    const e = emailSchema.safeParse(email);
+    if (!e.success) {
+      return toast.error("Enter your email above first, then tap 'Forgot password?'");
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(e.data, {
+      redirectTo: `${window.location.origin}/`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message || "Could not send reset email");
+    toast.success("Password reset link sent to your email");
   };
 
   return (
@@ -103,7 +132,11 @@ export default function Auth() {
       {/* Top bar */}
       <header className="border-b border-border">
         <div className="container-px mx-auto max-w-md flex items-center gap-3 h-14">
-          <Link to="/" aria-label="Back to home" className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted">
+          <Link
+            to="/"
+            aria-label="Back to home"
+            className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted"
+          >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <Link to="/" className="flex items-center gap-2">
@@ -115,126 +148,143 @@ export default function Auth() {
 
       <section className="flex-1 flex items-start justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          <h1 className="font-serif text-3xl text-foreground mb-1">
-            {step === "phone" ? "Welcome" : "Verify your number"}
-          </h1>
-          <p className="text-sm text-muted-foreground mb-7">
-            {step === "phone"
-              ? "Sign in or create your account to continue."
-              : `We sent a 6-digit code to +91 ${phone}.`}
-          </p>
-
-          {step === "phone" ? (
-            <>
-              {/* Google */}
+          {signupSent ? (
+            <div className="text-center">
+              <div className="mx-auto w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
+                <MailCheck className="w-7 h-7 text-brand" />
+              </div>
+              <h1 className="font-serif text-2xl text-foreground mb-2">Verify your email</h1>
+              <p className="text-sm text-muted-foreground mb-6">
+                We sent a verification link to <span className="font-medium text-foreground">{email}</span>.
+                Click the link in that email to activate your account, then come back and sign in.
+              </p>
               <button
                 type="button"
-                onClick={signInGoogle}
+                onClick={resendVerification}
                 disabled={busy}
-                className="w-full inline-flex items-center justify-center gap-3 border border-border rounded-full py-3 text-sm font-medium hover:bg-muted transition disabled:opacity-60"
+                className="w-full inline-flex items-center justify-center gap-2 border border-border rounded-full py-3 text-sm font-medium hover:bg-muted transition disabled:opacity-60"
               >
-                <GoogleLogo />
-                Continue with Google
+                {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                Resend verification email
               </button>
-
-              <div className="flex items-center gap-3 my-6 text-xs text-muted-foreground">
-                <div className="flex-1 h-px bg-border" />
-                or continue with phone
-                <div className="flex-1 h-px bg-border" />
-              </div>
-
-              {/* Phone */}
-              <label className="block text-xs font-medium text-foreground/70 mb-2">
-                Mobile number
-              </label>
-              <div className="flex items-stretch border border-border rounded-md overflow-hidden focus-within:border-brand transition">
-                <span className="inline-flex items-center px-3 bg-muted text-sm text-foreground/80 border-r border-border">
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  maxLength={10}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  placeholder="98XXXXXXXX"
-                  className="flex-1 bg-background px-3 py-3 text-sm outline-none"
-                />
-              </div>
-
               <button
                 type="button"
-                onClick={sendOtp}
-                disabled={busy || phone.length !== 10}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
+                onClick={() => {
+                  setSignupSent(false);
+                  setMode("signin");
+                  setPassword("");
+                }}
+                className="mt-4 text-sm text-brand font-medium"
               >
-                {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <PhoneIcon className="w-4 h-4" />}
-                Send OTP
+                Back to sign in
               </button>
+            </div>
+          ) : (
+            <>
+              <h1 className="font-serif text-3xl text-foreground mb-1">
+                {mode === "signin" ? "Welcome back" : "Create your account"}
+              </h1>
+              <p className="text-sm text-muted-foreground mb-7">
+                {mode === "signin"
+                  ? "Sign in with your email and password."
+                  : "Sign up with your email — we'll send a verification link."}
+              </p>
+
+              {/* Tabs */}
+              <div className="flex bg-muted rounded-full p-1 mb-6 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setMode("signin")}
+                  className={`flex-1 py-2 rounded-full transition ${
+                    mode === "signin" ? "bg-background shadow-sm font-semibold" : "text-muted-foreground"
+                  }`}
+                >
+                  Sign in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("signup")}
+                  className={`flex-1 py-2 rounded-full transition ${
+                    mode === "signup" ? "bg-background shadow-sm font-semibold" : "text-muted-foreground"
+                  }`}
+                >
+                  Sign up
+                </button>
+              </div>
+
+              <form
+                onSubmit={(ev) => {
+                  ev.preventDefault();
+                  mode === "signin" ? signIn() : signUp();
+                }}
+                className="space-y-4"
+              >
+                {mode === "signup" && (
+                  <div>
+                    <label className="block text-xs font-medium text-foreground/70 mb-2">Full name</label>
+                    <input
+                      type="text"
+                      autoComplete="name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Your name"
+                      className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-medium text-foreground/70 mb-2">Email</label>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-foreground/70">Password</label>
+                    {mode === "signin" && (
+                      <button
+                        type="button"
+                        onClick={forgotPassword}
+                        className="text-xs text-brand font-medium"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    type="password"
+                    autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
+                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
+                >
+                  {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {mode === "signin" ? "Sign in" : "Create account"}
+                </button>
+              </form>
 
               <p className="mt-6 text-[11px] text-muted-foreground leading-relaxed">
                 By continuing you agree to Lal Raja's Terms of Use & Privacy Policy.
               </p>
             </>
-          ) : (
-            <>
-              <label className="block text-xs font-medium text-foreground/70 mb-2">
-                Enter 6-digit code
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                placeholder="••••••"
-                className="w-full border border-border rounded-md px-4 py-3 text-center text-xl tracking-[0.5em] font-semibold outline-none focus:border-brand"
-              />
-
-              <button
-                type="button"
-                onClick={verifyOtp}
-                disabled={busy || otp.length !== 6}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
-              >
-                {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-                Verify & Continue
-              </button>
-
-              <div className="mt-4 flex items-center justify-between text-xs">
-                <button
-                  type="button"
-                  onClick={() => { setStep("phone"); setOtp(""); }}
-                  className="text-foreground/70 hover:text-brand"
-                >
-                  Change number
-                </button>
-                <button
-                  type="button"
-                  onClick={sendOtp}
-                  disabled={resendIn > 0 || busy}
-                  className="text-brand font-medium disabled:text-muted-foreground"
-                >
-                  {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend OTP"}
-                </button>
-              </div>
-            </>
           )}
         </div>
       </section>
     </main>
-  );
-}
-
-function GoogleLogo() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden>
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.6l6.2 5.2C41.3 35 44 30 44 24c0-1.3-.1-2.3-.4-3.5z"/>
-    </svg>
   );
 }
