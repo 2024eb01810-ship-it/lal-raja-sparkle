@@ -11,7 +11,7 @@ export function TestimonialsCarousel() {
   return (
     <section className="py-14 md:py-20">
       <div className="container-px max-w-4xl mx-auto">
-        <SectionHeading eyebrow="Testimonials" title="Cherished by families" />
+        <SectionHeading title="Cherished by families" viewAllHref="/about" viewAllLabel="Read more" />
         <div className="mt-10 text-center">
           {t.photo_url && (
             <img src={t.photo_url} alt={t.name} loading="lazy" className="w-20 h-20 rounded-full object-cover mx-auto mb-5 ring-2 ring-gold/40" />

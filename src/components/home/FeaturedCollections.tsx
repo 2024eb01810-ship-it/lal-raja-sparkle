@@ -8,7 +8,7 @@ export function FeaturedCollections() {
   return (
     <section className="py-14 md:py-20 bg-secondary/40">
       <div className="container-px max-w-7xl mx-auto">
-        <SectionHeading eyebrow="Signature" title="Featured Collections" />
+        <SectionHeading title="Featured Collections" viewAllHref="/collections" />
         <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5]" />)

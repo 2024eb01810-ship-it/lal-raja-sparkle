@@ -8,7 +8,7 @@ export function OffersStrip() {
   return (
     <section className="py-14 md:py-20">
       <div className="container-px max-w-7xl mx-auto">
-        <SectionHeading eyebrow="Limited Time" title="Offers & Promotions" />
+        <SectionHeading title="Offers & Promotions" viewAllHref="/offers" />
         <div className="mt-10 grid md:grid-cols-3 gap-5 md:gap-6">
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="aspect-[4/3]" />)

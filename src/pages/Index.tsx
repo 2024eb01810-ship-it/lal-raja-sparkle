@@ -24,16 +24,13 @@ const Index = () => {
       <HeroSlideshow />
       <CategoryScroller />
 
-      <section className="py-14 md:py-20 bg-background">
+      <section className="py-12 md:py-16 bg-brand-soft/40">
         <div className="container-px max-w-7xl mx-auto">
-          <SectionHeading eyebrow="Handpicked" title="Featured Pieces" />
-          <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <SectionHeading title="Featured Pieces" viewAllHref="/collections" viewAllLabel="Shop all" />
+          <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {isLoading
-              ? Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5]" />)
+              ? Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-xl" />)
               : featured?.map((p: any) => <ProductCard key={p.id} product={p} />)}
-          </div>
-          <div className="text-center mt-10">
-            <Link to="/collections" className="luxury-btn bg-foreground text-background">Shop All</Link>
           </div>
         </div>
       </section>

@@ -16,7 +16,7 @@ export function InstagramGrid() {
   return (
     <section className="py-14 md:py-20 bg-secondary/30">
       <div className="container-px max-w-7xl mx-auto">
-        <SectionHeading eyebrow="@lalrajajewels" title="Follow our journey" />
+        <SectionHeading title="Follow Our Journey" viewAllHref="/contact" viewAllLabel="@lalrajajewels" />
         <div className="mt-10 grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
           {TILES.map((src, i) => (
             <a
