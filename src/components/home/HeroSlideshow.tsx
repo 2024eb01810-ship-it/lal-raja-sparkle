@@ -21,7 +21,34 @@ export function HeroSlideshow() {
   }, []);
 
   if (isLoading) return <Skeleton className="w-full h-[70vh] md:h-[85vh]" />;
-  if (!banners || banners.length === 0) return null;
+  if (!banners || banners.length === 0) {
+    return (
+      <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1920"
+          alt="Lal Raja Jewels"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-hero-overlay" />
+        <div className="absolute inset-0 flex items-end md:items-center">
+          <div className="container-px max-w-7xl mx-auto pb-16 md:pb-0">
+            <div className="max-w-xl text-background animate-fade-up">
+              <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">Lal Raja Jewels</p>
+              <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-medium leading-[1.05] mb-4">
+                Heritage in every hallmark
+              </h1>
+              <p className="text-base md:text-lg text-background/85 mb-7 max-w-md">
+                Bridal sets, polki, kundan and certified diamonds — handcrafted in Vijayawada since 1972.
+              </p>
+              <Link to="/collections" className="luxury-btn text-foreground bg-background hover:text-foreground">
+                Explore Collections
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative w-full h-[78vh] md:h-[88vh] overflow-hidden">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone, MessageCircle, Menu, X } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { phoneLink, whatsappLink } from "@/lib/whatsapp";
 
@@ -17,6 +17,8 @@ const NAV = [
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
@@ -24,29 +26,34 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   return (
     <header
       className={`sticky top-0 z-40 transition-all duration-500 ${
         scrolled ? "glass-blur shadow-soft" : "bg-background"
       }`}
     >
-      <div className="container-px mx-auto max-w-7xl flex items-center justify-between h-16 md:h-20">
-        <Link to="/" className="flex items-center gap-2" aria-label="Lal Raja Jewels home">
-          <img src={logo} alt="Lal Raja Jewels" className="h-10 md:h-12 w-auto" width={48} height={48} />
-          <span className="hidden sm:flex flex-col leading-none">
-            <span className="font-serif text-lg md:text-xl font-medium tracking-wide">Lal Raja</span>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-gold">Jewels</span>
+      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-4 lg:gap-8 h-16 md:h-20">
+        <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Jewels home">
+          <img src={logo} alt="Lal Raja Jewels" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
+          <span className="flex flex-col leading-none min-w-0">
+            <span className="font-serif text-base sm:text-lg md:text-xl font-medium tracking-wide truncate">Lal Raja</span>
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] text-gold">Jewels</span>
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 flex-1 justify-center min-w-0">
           {NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
-                `text-xs uppercase tracking-[0.2em] transition-colors hover:text-gold ${
+                `text-[11px] xl:text-xs uppercase tracking-[0.15em] xl:tracking-[0.2em] transition-colors hover:text-gold whitespace-nowrap ${
                   isActive ? "text-gold" : "text-foreground/80"
                 }`
               }
@@ -56,7 +63,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <a
             href={phoneLink}
             aria-label="Call store"
@@ -73,8 +80,40 @@ export function Header() {
           >
             <MessageCircle className="w-4 h-4" />
           </a>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
+          >
+            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile / tablet menu */}
+      {open && (
+        <div className="lg:hidden border-t border-border bg-background animate-fade-in">
+          <nav className="container-px mx-auto max-w-7xl py-4 flex flex-col">
+            {NAV.map((n) => (
+              <NavLink
+                key={n.to}
+                to={n.to}
+                end={n.to === "/"}
+                onClick={() => setOpen(false)}
+                className={({ isActive }) =>
+                  `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 last:border-0 ${
+                    isActive ? "text-gold" : "text-foreground/85"
+                  }`
+                }
+              >
+                {n.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

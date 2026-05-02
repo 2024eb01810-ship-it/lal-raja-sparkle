@@ -76,10 +76,12 @@
 @layer base {
   * { @apply border-border; }
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  html, body { overflow-x: hidden; max-width: 100%; }
   body {
     @apply bg-background text-foreground font-sans;
     font-feature-settings: "ss01", "ss02";
   }
+  img { max-width: 100%; height: auto; }
   h1, h2, h3, h4, h5 { @apply font-serif; letter-spacing: -0.01em; }
 }
 
