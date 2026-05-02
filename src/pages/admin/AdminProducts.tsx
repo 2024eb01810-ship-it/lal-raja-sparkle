@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { formatINRRange } from "@/lib/format";
+import { priceRange as formatINRRange } from "@/lib/format";
 
 const METALS = ["Gold 22K", "Gold 18K", "Gold 14K", "Silver 925", "Platinum"];
 const OCCASIONS = ["Bridal", "Daily Wear", "Festive", "Casual", "Office"];
