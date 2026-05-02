@@ -71,7 +71,7 @@ export function Header() {
           <a
             href={phoneLink}
             aria-label="Call store"
-            className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
+            className="hidden sm:inline-flex lg:hidden xl:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
           >
             <Phone className="w-4 h-4" />
           </a>
