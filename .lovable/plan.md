@@ -1,79 +1,41 @@
-## Goal
+# Add Firebase Analytics alongside Lovable Cloud
 
-Working sign-in / register on Lal Raja with **Phone OTP** and **Google**, redirect to home on success, header reflects logged-in state.
+You chose **"Add Firebase ALONGSIDE Cloud"**, so this plan keeps your existing Google login (which already stores users in Lovable Cloud / Supabase `profiles`) **untouched** and only wires Firebase in for **Analytics tracking**.
 
-## Important callout
-
-Phone OTP needs an SMS provider. Lovable Cloud's phone auth requires you to plug in **Twilio** (or another SMS provider) so the codes can actually be delivered. After I build the UI, you'll need to enable Phone provider + add Twilio credentials in Cloud → Users → Auth Settings. Google sign-in works immediately, no setup needed.
+Important: Firebase Analytics does **not** create user accounts. Your Firebase config has no auth domain enabled for Google login in your code, and your `/auth` page already does Google sign-in via Lovable Cloud. Mixing a second Google sign-in into Firebase would create duplicate accounts that can't talk to your Supabase `profiles`, RLS, or admin panel — that's why we're only adding Analytics here.
 
 ## What gets built
 
-### 1. Database (one small migration)
+1. **Install Firebase SDK**
+   - `bun add firebase`
 
-The `profiles` table already exists and `handle_new_user()` is defined, but the trigger that calls it on new signups is missing. Add:
+2. **New file: `src/integrations/firebase/client.ts`**
+   - Initializes the Firebase app with your provided config.
+   - Initializes `getAnalytics(app)` only in the browser (guarded for SSR/build safety with `isSupported()` from `firebase/analytics`).
+   - Exports `app` and `analytics` for optional later use.
 
-- Trigger `on_auth_user_created` on `auth.users` AFTER INSERT → `public.handle_new_user()`
-- INSERT policy on `profiles` so the trigger (running as the user) can write the initial row
-- Add a `phone` column to `profiles` so phone-OTP users have it stored
+3. **Wire it into the app**
+   - Import the client once at app entry (`src/main.tsx`) so Analytics initializes on page load.
+   - No UI changes. No changes to `useAuth`, `/auth` page, or Supabase.
 
-### 2. New page: `/auth`
+4. **Track Google sign-in success as an Analytics event (optional but useful)**
+   - In `src/pages/Auth.tsx`, after a successful Google sign-in (and after successful OTP verify), fire `logEvent(analytics, 'login', { method: 'google' | 'phone' })`.
+   - This gives you the "Google login happened" signal in Firebase Analytics, while the actual user record stays in Lovable Cloud `profiles` (linked by Supabase `user.id`).
 
-Two-step phone flow + Google button:
+## What is NOT changed
 
-```text
-┌────────────────────────────┐
-│   Welcome to Lal Raja      │
-│                            │
-│   [ Continue with Google ] │
-│   ──────── or ────────     │
-│   [ +91 | 98XXXXXXXX   ]   │
-│   [    Send OTP        ]   │
-└────────────────────────────┘
-        ↓ (after Send)
-┌────────────────────────────┐
-│   Enter the 6-digit code   │
-│   sent to +91 98XXXXXXXX   │
-│                            │
-│   [ • • • • • • ]          │
-│   [   Verify    ]          │
-│   Resend in 30s            │
-└────────────────────────────┘
-```
+- `/auth` page flow (Google + Phone OTP) — unchanged.
+- `useAuth` hook, `profiles` table, `user_roles`, RLS policies, admin panel — unchanged.
+- No Firebase Auth, no Firestore, no second Google sign-in button.
+- Your Firebase API key is a public web key — safe to commit in the client file (same model as `VITE_SUPABASE_PUBLISHABLE_KEY`).
 
-Behavior:
-- Phone is normalized to E.164 (default country +91, editable)
-- `signInWithOtp({ phone })` sends code; same call handles signup + login
-- `verifyOtp({ phone, token, type: 'sms' })` completes auth
-- Google button uses Lovable's managed OAuth (`lovable.auth.signInWithOAuth("google")`)
-- On success → redirect to `/`
-- All inputs validated with zod (phone regex, 6-digit OTP)
-- Toast on every error so the user always sees what went wrong
+## Files touched
 
-### 3. Auth state + header wiring
+- `package.json` (adds `firebase`)
+- `src/integrations/firebase/client.ts` (new)
+- `src/main.tsx` (one import line)
+- `src/pages/Auth.tsx` (two `logEvent` calls)
 
-- New hook `useAuth()` wrapping Supabase: `onAuthStateChange` listener set up before `getSession()`, exposes `{ user, session, loading, signOut }`
-- Header changes:
-  - Mobile drawer: when logged in, replace "Sign In / Register" pill with the user's name/phone + a "Sign out" link
-  - Desktop user icon: link to `/auth` when logged out, dropdown with name + sign out when logged in
-- All existing "Sign In / Register" links point to `/auth`
+## Heads up
 
-### 4. Route registration
-
-Add `<Route path="/auth" element={<Auth />} />` to the router (public route).
-
-## Files
-
-- `supabase/migrations/<ts>_auth_trigger.sql` — trigger + profile INSERT policy + phone column
-- `src/pages/Auth.tsx` — the new page (two-step phone + Google)
-- `src/hooks/useAuth.ts` — session hook
-- `src/components/layout/Header.tsx` — swap Sign In pill / user info when authed
-- `src/App.tsx` — register `/auth` route
-
-## After I'm done — what you do
-
-1. Open **Cloud → Users → Auth Settings → Sign In Methods**
-2. Toggle **Phone** on, paste your Twilio Account SID, Auth Token, and From number
-3. Toggle **Google** on (already managed — just confirm it's enabled)
-4. Test from `/auth`
-
-Google works the moment you flip the toggle. Phone won't deliver SMS until Twilio is connected — that step is unavoidable for OTP.
+If what you actually want is **"users sign in with Google and a user record appears in the Firebase console"**, that requires Firebase **Auth** (not Analytics) and would conflict with your existing Lovable Cloud auth. Tell me and I'll revise the plan to option 4 from my question (Firebase Google login + sync into Supabase). Otherwise approve and I'll implement the Analytics plan above.

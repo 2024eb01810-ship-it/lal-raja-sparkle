@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2, Phone as PhoneIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
+import { trackEvent } from "@/integrations/firebase/client";
 import logo from "@/assets/logo.png";
 
 const phoneSchema = z
@@ -73,6 +74,7 @@ export default function Auth() {
       toast.error(error.message || "Invalid or expired code");
       return;
     }
+    trackEvent("login", { method: "phone" });
     toast.success("Welcome to Lal Raja!");
     navigate("/", { replace: true });
   };
@@ -87,8 +89,12 @@ export default function Auth() {
       toast.error("Google sign-in failed. Please try again.");
       return;
     }
-    if (result.redirected) return; // browser navigates away
+    if (result.redirected) {
+      trackEvent("login", { method: "google", stage: "redirect" });
+      return; // browser navigates away
+    }
     // tokens received & session set
+    trackEvent("login", { method: "google" });
     navigate("/", { replace: true });
   };
 
