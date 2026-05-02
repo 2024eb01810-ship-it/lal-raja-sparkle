@@ -219,7 +219,7 @@ export function Header() {
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto pb-8">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide pb-8">
               {/* Quick chips row */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide px-5 pb-4 snap-x">
                 {QUICK_CHIPS.map(({ to, label, Icon, cls }) => (
