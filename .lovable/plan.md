@@ -1,80 +1,77 @@
-#  Lal Raja Gold And Diamond Jewellery — Phase 1 Plan
+## Goal
 
-A luxury, mobile-first jewelry website for Lal Raja Gold And Diamond Jewellery (Vijayawada). Phase 1 delivers the complete public-facing site with a real Supabase schema and seeded sample content so every page looks production-ready immediately. Phase 2 (separate plan after approval) adds the admin CMS with Admin/Editor roles.
+Re-skin the home page (and global header) to closely match the Malabar Gold & Diamonds reference — same structure, color language, and section rhythm — while keeping our existing data, routes, and brand name "Lal Raja".
 
----
+Note: We will mirror the **layout and visual style**, not copy their logo, photography, or trademarks. Hero/product imagery will continue to come from your CMS (Banners, Categories, Products).
 
-## Design system
-
-- **Colors** (HSL tokens in `index.css`): blush `#F2A7BB`, pearl `#FAF8F5`, powder blue `#B8D4E8`, gold `#C9A84C`, charcoal `#1A1A1A`.
-- **Typography**: Cormorant Garamond (headings) + Montserrat (body), loaded via Google Fonts; Telugu accents use Noto Serif Telugu.
-- **Luxury touches**: gold shimmer hover, sticky blurred header, hero parallax, image zoom on product pages, smooth scroll, fade/scale entrance animations, skeleton loaders, lazy-loaded images.
-- **Mobile-first**: every layout designed at 375px first, then scaled up. **Bottom tab navigation** on mobile (Home, Collections, Bridal, Store, Contact) replaces a hamburger. Header collapses to logo + WhatsApp icon on mobile.
-- **Always-visible WhatsApp floating button** above the bottom nav on mobile, bottom-right on desktop.
-
-## Pages built in Phase 1
-
-1. **Home** — announcement marquee, hero slideshow with parallax, shop-by-category horizontal scroller, featured collections grid, bridal highlight band, offers strip, brand legacy block, testimonials carousel, Instagram feed grid (static tiles for now), WhatsApp FAB.
-2. **Collections** (`/collections` and `/collections/:category`) — filters (metal, occasion, price, type) in a mobile bottom-sheet / desktop sidebar, 2-col mobile / 4-col desktop grid, quick view modal on desktop hover.
-3. **Product detail** (`/product/:slug`) — swipeable gallery with zoom, name/description/price range, metal/weight/stone specs, primary "Enquire on WhatsApp" + secondary "Call Now" CTAs (pre-filled message with product name), related products rail. No cart.
-4. **Bridal** (`/bridal`) — dedicated hero, bridal sets showcase, "Book Bridal Appointment" form (writes to Supabase `appointments` table), testimonial wall with photos.
-5. **Offers** (`/offers`) — current promotions grid, festival specials, exchange-offer details card.
-6. **About** (`/about`) — brand story, craftsmanship section, BIS Hallmark / IGI certification badges, master craftsmen.
-7. **Store** (`/store`) — Vijayawada address, embedded Google Map, timings table, photo gallery.
-8. **Contact** (`/contact`) — WhatsApp + Call CTAs, address card, appointment form, simple message form (writes to Supabase `enquiries`).
-
-A `NotFound` page already exists and stays.
-
-## Supabase schema (created in Phase 1, used by public site, edited via Phase 2 admin)
-
-- `banners` — hero/announcement slides (image, title, subtitle, cta, order, active).
-- `categories` — the 7 jewelry categories (slug, name, telugu_name, image, order).
-- `collections` — featured collections (slug, name, description, cover_image, featured, order).
-- `products` — products (slug, name, description, category_id, collection_id, metal, weight_grams, stones, price_min, price_max, images jsonb, featured, active).
-- `offers` — promotions (title, description, image, valid_until, active, order).
-- `testimonials` — customer reviews (name, photo, message, rating, occasion, approved).
-- `store_info` — singleton row (address, phone, whatsapp, hours jsonb, map_embed, gallery jsonb).
-- `appointments` — bridal/general appointment requests (name, phone, date, type, notes).
-- `enquiries` — contact-form messages (name, phone, email, message).
-- `profiles` + `user_roles` (`app_role` enum: `admin`, `editor`) + `has_role()` security-definer function — created now so Phase 2 admin slots in cleanly.
-
-**RLS**: public `SELECT` on content tables (banners/categories/collections/products/offers/testimonials/store_info) where `active = true`. `INSERT` allowed by anyone on `appointments` and `enquiries` (with length-validated inputs). All write/update/delete restricted to `admin` or `editor` roles via `has_role()`.
-
-Seed data: ~20 sample products across all 7 categories using high-quality Unsplash jewelry placeholders, 3 hero banners, 4 collections, 3 offers, 5 testimonials, store info row.
-
-## Tech details
-
-- **Stack**: existing React + Vite + Tailwind + shadcn. Lovable Cloud for Supabase (auth + DB).
-- **Routing**: React Router; routes added above the catch-all in `App.tsx`.
-- **Data**: TanStack Query hooks per table (`useBanners`, `useProducts`, etc.) reading from Supabase.
-- **WhatsApp link**: `https://wa.me/918184839498?text=...` with URL-encoded product context.
-- **SEO**: per-page `<title>`, meta description, OpenGraph tags via a small `<Seo />` helper; JSON-LD `Product` schema on product pages, `LocalBusiness` schema on Store page.
-- **Performance**: native `loading="lazy"` + `decoding="async"` on images, skeleton states via shadcn `Skeleton`, route-level code splitting with `React.lazy`.
-- **Installability**: simple `manifest.json` with icons + `display: standalone` (no service worker — avoids preview-iframe issues; full offline PWA can be added later if needed).
-- **Form validation**: zod schemas on appointment + contact forms, both client and server-enforced length limits.
-
-## Out of scope for Phase 1 (covered in Phase 2)
-
-- `/admin` login, dashboard, and CRUD UIs for banners/products/collections/offers/testimonials/store info.
-- Image upload to Supabase Storage from admin (bucket + RLS will be created in Phase 2).
-- Role assignment UI (admins managing editors).
-
-## File structure (high level)
+## Reference layout (top to bottom)
 
 ```text
-src/
-  components/
-    layout/ Header, BottomNav, Footer, WhatsAppFab, AnnouncementTicker
-    home/   HeroSlideshow, CategoryScroller, FeaturedCollections,
-            BridalHighlight, OffersStrip, LegacyBlock,
-            TestimonialsCarousel, InstagramGrid
-    product/ ProductCard, ProductGrid, ProductGallery, FilterSheet
-    common/ Seo, Skeletons, SectionHeading
-  pages/    Index, Collections, Product, Bridal, Offers, About,
-            Store, Contact, NotFound
-  hooks/    useBanners, useCategories, useCollections, useProducts,
-            useOffers, useTestimonials, useStoreInfo
-  lib/      whatsapp.ts, supabase types
+[ Pink/magenta top bar | Logo · Search · Stores · Wishlist · Bag · Account ]
+[ White sub-bar       | Nav links ............................. Live Gold Rate · Set Location ]
+[ HERO slideshow      | Necklace cut-out left · Big serif word + tagline + Shop Now · dots ]
+[ Shop By Category    | 6 rounded image tiles, horizontal scroll · "View all →" ]
+[ Featured Pieces     | 4-up product grid ]
+[ Featured Collections / Bridal / Offers / Legacy / Testimonials / Instagram ]
 ```
 
-After approval I'll enable Lovable Cloud, create the schema + seed data, then build the pages top-down (design system → layout shell → Home → remaining pages).
+## Changes
+
+### 1. Header (`src/components/layout/Header.tsx`)
+
+- Two-row header on desktop:
+  - **Row 1 (magenta `--brand` bar):** logo + brand name (white), centered search input ("What are you looking for today?"), right-side icon group (Stores, Phone, WhatsApp, Menu).
+  - **Row 2 (white):** primary nav links left, **Live Gold Rate** chip + **Set Location** pill right.
+- On mobile: single magenta bar with logo + hamburger + WhatsApp; search collapses into a full-width row underneath; nav goes into the existing slide-down menu.
+- Sticky behavior preserved; z-index tokens unchanged.
+
+### 2. Color system (`src/index.css`, `tailwind.config.ts`)
+
+- Add a new brand palette alongside the existing gold tokens (do not remove gold — it remains the accent for buttons/badges):
+  - `--brand` magenta `330 75% 38%`
+  - `--brand-foreground` `0 0% 100%`
+  - `--brand-soft` `330 60% 96%` (section tints)
+- All values in HSL, exposed as Tailwind colors `brand`, `brand-foreground`, `brand-soft`.
+- Buttons get a `brand` variant (filled magenta, white text, subtle shadow) and a `brand-outline` variant for the cream "Shop Now" hero CTA.
+
+### 3. Hero (`src/components/home/HeroSlideshow.tsx`)
+
+- New layout per slide:
+  - Full-bleed background image (banner from CMS).
+  - Left third: product/necklace cut-out (uses banner `secondary_image_url`; falls back gracefully to a single image).
+  - Right third: large serif display word (banner title), thin caption line, 2-line tagline, cream rounded **Shop Now** CTA.
+- Pagination dots centered under the slide (active dot in magenta).
+- Keeps the existing skeleton + retry logic from the previous pass.
+
+### 4. New "Shop By Category" rail (`src/components/home/CategoryScroller.tsx`)
+
+- Section header: bold sans **"Shop By Category"** left, **"View all →"** link right (magenta).
+- Rounded-rectangle tiles (~`aspect-[3/4]`) with category image and label overlay; horizontal scroll on mobile, 6-up grid on desktop.
+
+### 5. Other home sections
+
+- `FeaturedCollections`, `BridalHighlight`, `OffersStrip`, `LegacyBlock`, `TestimonialsCarousel`, `InstagramGrid`: keep current content, restyle headings to match (bold sans title + magenta "View all →" link, generous padding, `brand-soft` alternating background).
+- `SectionHeading` component updated to support the new title/link pattern.
+
+### 6. Live Gold Rate chip
+
+- Static placeholder for now ("Live Gold Rate · ₹—/g (22kt)") wired to read from `site_settings` if present in `useContent`. Real feed can be added later via an edge function.
+
+## Out of scope
+
+- E-commerce features (cart, wishlist, account) — icons render but link to existing pages or are decorative.
+- Multi-language and location selector logic.
+- Live gold-price integration (placeholder only).
+
+## Files to touch
+
+- `src/index.css` — add brand HSL tokens, brand-soft section utility.
+- `tailwind.config.ts` — register `brand`, `brand-foreground`, `brand-soft`.
+- `src/components/layout/Header.tsx` — two-row magenta header + search + gold-rate chip.
+- `src/components/home/HeroSlideshow.tsx` — split-layout hero with serif display word and cream CTA.
+- `src/components/home/CategoryScroller.tsx` — Malabar-style tile rail with "View all".
+- `src/components/common/SectionHeading.tsx` — title + right-aligned link variant.
+- `src/components/home/FeaturedCollections.tsx`, `BridalHighlight.tsx`, `OffersStrip.tsx`, `LegacyBlock.tsx`, `TestimonialsCarousel.tsx`, `InstagramGrid.tsx` — heading + spacing pass.
+- `src/pages/Index.tsx` — minor spacing/order tweaks only.
+
+Approve this and I'll implement it in one pass.
