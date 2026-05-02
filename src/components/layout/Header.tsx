@@ -178,30 +178,112 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile / tablet menu */}
+      {/* Mobile / tablet menu — Malabar-style full-width drawer */}
       {open && (
-        <div className="lg:hidden border-t border-border bg-background animate-fade-in z-mobile-menu relative shadow-soft max-h-[calc(100dvh-4rem)] overflow-y-auto">
-          <nav className="container-px mx-auto max-w-7xl py-4 flex flex-col">
-            <NavLink to="/" end onClick={() => setOpen(false)} className={({ isActive }) => `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 ${isActive ? "text-brand" : "text-foreground/85"}`}>Home</NavLink>
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to} to={n.to} end={n.to === "/"}
+        <>
+          {/* Backdrop */}
+          <div
+            className="lg:hidden fixed inset-0 top-[8.25rem] bg-black/40 z-mobile-menu animate-fade-in"
+            onClick={() => setOpen(false)}
+            aria-hidden
+          />
+          {/* Drawer */}
+          <div className="lg:hidden fixed left-0 right-0 top-[8.25rem] bottom-0 bg-background z-mobile-menu animate-fade-in flex flex-col shadow-strong">
+            {/* Welcome header */}
+            <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
+              <h2 className="font-serif text-2xl text-foreground">Welcome!</h2>
+              <button
+                type="button"
+                aria-label="Close menu"
                 onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 last:border-0 ${
-                    isActive ? "text-brand" : "text-foreground/85"
-                  }`
-                }
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-muted text-foreground"
               >
-                {n.label}
-              </NavLink>
-            ))}
-            <div className="mt-3 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Live Gold Rate</span>
-              <span className="font-semibold text-brand">₹—/g (22kt)</span>
+                <X className="w-5 h-5" />
+              </button>
             </div>
-          </nav>
-        </div>
+
+            {/* Sign in pill */}
+            <div className="px-5 pb-4 shrink-0">
+              <Link
+                to="/contact"
+                onClick={() => setOpen(false)}
+                className="inline-flex items-center gap-2 border border-brand text-brand rounded-full px-4 py-2 text-sm font-medium hover:bg-brand/5"
+              >
+                Sign In / Register <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            {/* Scrollable content */}
+            <div className="flex-1 overflow-y-auto pb-8">
+              {/* Quick chips row */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide px-5 pb-4 snap-x">
+                {QUICK_CHIPS.map(({ to, label, Icon, cls }) => (
+                  <Link
+                    key={label}
+                    to={to}
+                    onClick={() => setOpen(false)}
+                    className={`shrink-0 snap-start inline-flex items-center gap-2 rounded-md px-3.5 py-2.5 text-sm font-medium ${cls}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </Link>
+                ))}
+              </div>
+
+              {/* Main nav list */}
+              <nav className="px-5">
+                {NAV.map(({ to, label, Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    onClick={() => setOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center justify-between gap-3 py-4 border-b border-border/60 ${
+                        isActive ? "text-brand" : "text-foreground/90"
+                      }`
+                    }
+                  >
+                    <span className="flex items-center gap-3">
+                      <Icon className="w-5 h-5 text-foreground/70" />
+                      <span className="text-[15px]">{label}</span>
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-foreground/50" />
+                  </NavLink>
+                ))}
+              </nav>
+
+              {/* Featured tiles 2x2 */}
+              <div className="px-5 mt-5 grid grid-cols-2 gap-3">
+                {FEATURED_TILES.map(({ to, title, img }) => (
+                  <Link
+                    key={title}
+                    to={to}
+                    onClick={() => setOpen(false)}
+                    className="relative aspect-[3/4] rounded-lg overflow-hidden bg-secondary group"
+                  >
+                    <img src={img} alt={title} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-x-0 bottom-0 px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+                      <span className="text-background text-sm font-medium">{title}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Footer links */}
+              <div className="mt-5 px-5 pb-2 text-[15px]">
+                <Link to="/contact" onClick={() => setOpen(false)} className="block py-3 border-t border-border/60 text-foreground/80">FAQs</Link>
+                <Link to="/collections" onClick={() => setOpen(false)} className="block py-3 border-t border-border/60 text-foreground/80">Size Guide</Link>
+                <Link to="/contact" onClick={() => setOpen(false)} className="block py-3 border-t border-border/60 text-foreground/80">Contact Us</Link>
+              </div>
+
+              {/* Live Gold Rate footer */}
+              <div className="mt-2 px-5 py-4 bg-muted flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Live Gold Rate</span>
+                <span className="font-semibold text-brand">₹—/g (22kt)</span>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </header>
   );
