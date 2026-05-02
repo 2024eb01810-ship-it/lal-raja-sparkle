@@ -1,17 +1,35 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Phone, MessageCircle, Menu, X, Search, MapPin, Store, Heart, ShoppingBag, User } from "lucide-react";
+import {
+  Phone, MessageCircle, Menu, X, Search, MapPin, Store, Heart, ShoppingBag, User,
+  ChevronRight, Gem, Gift, Crown, Sparkles, Coins, ShieldCheck, Award, BadgeCheck,
+  Flame, Star, ArrowRight,
+} from "lucide-react";
 import logo from "@/assets/logo.png";
 import { phoneLink, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { to: "/collections", label: "All Jewellery" },
-  { to: "/bridal", label: "Bridal" },
-  { to: "/offers", label: "Offers" },
-  { to: "/about", label: "About" },
-  { to: "/store", label: "Store" },
-  { to: "/certifications", label: "Trust" },
-  { to: "/contact", label: "Contact" },
+  { to: "/collections", label: "All Jewellery", Icon: Gem },
+  { to: "/bridal", label: "Bridal", Icon: Crown },
+  { to: "/offers", label: "Offers & Gifting", Icon: Gift },
+  { to: "/collections?category=coins", label: "Gold Coins & Bars", Icon: Coins },
+  { to: "/about", label: "About Lal Raja", Icon: Sparkles },
+  { to: "/certifications", label: "Lal Raja Promises", Icon: ShieldCheck },
+  { to: "/store", label: "Stores", Icon: MapPin },
+  { to: "/contact", label: "Contact", Icon: Phone },
+];
+
+const QUICK_CHIPS = [
+  { to: "/collections?sort=bestsellers", label: "Bestsellers", Icon: Star, cls: "bg-[#E9DDF7] text-[#5B2A86]" },
+  { to: "/collections?sort=new", label: "New Arrivals", Icon: Flame, cls: "bg-[#E2E5C7] text-[#5A6B1E]" },
+  { to: "/store", label: "Locate a Store", Icon: MapPin, cls: "bg-[#E8D9B0] text-[#7A5A1F]" },
+];
+
+const FEATURED_TILES = [
+  { to: "/collections?category=rings", title: "Rings under 25k", img: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&q=70" },
+  { to: "/bridal", title: "Bridal Festival", img: "https://images.unsplash.com/photo-1535632066274-36f6becd5d11?w=400&q=70" },
+  { to: "/collections?category=necklaces", title: "Heritage", img: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&q=70" },
+  { to: "/collections?category=bangles", title: "Bespoke", img: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=400&q=70" },
 ];
 
 export function Header() {
