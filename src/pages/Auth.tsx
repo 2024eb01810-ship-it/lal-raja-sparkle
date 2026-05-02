@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Mail, MailCheck } from "lucide-react";
+import { ArrowLeft, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { trackEvent } from "@/integrations/firebase/client";
@@ -18,24 +18,41 @@ const nameSchema = z
   .trim()
   .min(1, { message: "Enter your name" })
   .max(80, { message: "Name too long" });
+const otpSchema = z.string().trim().regex(/^\d{6}$/, { message: "Enter the 6-digit code" });
 
 type Mode = "signin" | "signup";
+type Step = "form" | "otp";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
   const [mode, setMode] = useState<Mode>("signin");
+  const [step, setStep] = useState<Step>("form");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
-  const [signupSent, setSignupSent] = useState(false);
+  const [resendIn, setResendIn] = useState(0);
 
   // Already logged in → home
   useEffect(() => {
     if (!authLoading && user) navigate("/", { replace: true });
   }, [user, authLoading, navigate]);
+
+  // Resend countdown
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setInterval(() => setResendIn((s) => s - 1), 1000);
+    return () => clearInterval(t);
+  }, [resendIn]);
+
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    setStep("form");
+    setOtp("");
+  };
 
   const signIn = async () => {
     const e = emailSchema.safeParse(email);
@@ -52,7 +69,9 @@ export default function Auth() {
 
     if (error) {
       if (/email.*not.*confirm/i.test(error.message)) {
-        toast.error("Please verify your email first. Check your inbox for the link.");
+        toast.error("Please verify your email first. We'll send a new code.");
+        // auto-trigger OTP so they can verify now
+        sendOtp();
       } else {
         toast.error(error.message || "Could not sign in");
       }
@@ -61,6 +80,25 @@ export default function Auth() {
     trackEvent("login", { method: "email" });
     toast.success("Welcome back!");
     navigate("/", { replace: true });
+  };
+
+  const sendOtp = async () => {
+    const e = emailSchema.safeParse(email);
+    if (!e.success) return toast.error(e.error.issues[0].message);
+    setBusy(true);
+    // shouldCreateUser:false because the account already exists (created in signUp)
+    const { error } = await supabase.auth.signInWithOtp({
+      email: e.data,
+      options: { shouldCreateUser: false },
+    });
+    setBusy(false);
+    if (error) {
+      toast.error(error.message || "Could not send the code");
+      return;
+    }
+    toast.success(`Code sent to ${e.data}`);
+    setStep("otp");
+    setResendIn(30);
   };
 
   const signUp = async () => {
@@ -72,7 +110,9 @@ export default function Auth() {
     if (!p.success) return toast.error(p.error.issues[0].message);
 
     setBusy(true);
-    const { data, error } = await supabase.auth.signUp({
+    // Create the account with password. emailRedirectTo is required by the
+    // SDK but the user will use the OTP code, not the link.
+    const { error } = await supabase.auth.signUp({
       email: e.data,
       password: p.data,
       options: {
@@ -83,41 +123,45 @@ export default function Auth() {
     setBusy(false);
 
     if (error) {
+      // Existing account — they should sign in instead
+      if (/already.*registered|user.*exists/i.test(error.message)) {
+        toast.error("This email is already registered. Try signing in.");
+        switchMode("signin");
+        return;
+      }
       toast.error(error.message || "Could not create account");
       return;
     }
     trackEvent("sign_up", { method: "email" });
-
-    // If session is null, email confirmation is required.
-    if (!data.session) {
-      setSignupSent(true);
-      toast.success("Check your email to verify your account");
-      return;
-    }
-    // Edge case: project auto-confirms — drop straight in.
-    toast.success("Account created!");
-    navigate("/", { replace: true });
+    // Now send the 6-digit OTP for verification
+    await sendOtp();
   };
 
-  const resendVerification = async () => {
+  const verifyOtp = async () => {
     const e = emailSchema.safeParse(email);
+    const code = otpSchema.safeParse(otp);
     if (!e.success) return toast.error(e.error.issues[0].message);
+    if (!code.success) return toast.error(code.error.issues[0].message);
+
     setBusy(true);
-    const { error } = await supabase.auth.resend({
-      type: "signup",
+    const { error } = await supabase.auth.verifyOtp({
       email: e.data,
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      token: code.data,
+      type: "email",
     });
     setBusy(false);
-    if (error) return toast.error(error.message || "Could not resend email");
-    toast.success("Verification email sent again");
+    if (error) {
+      toast.error(error.message || "Invalid or expired code");
+      return;
+    }
+    trackEvent("login", { method: "email_otp" });
+    toast.success("Verified! Welcome to Lal Raja.");
+    navigate("/", { replace: true });
   };
 
   const forgotPassword = async () => {
     const e = emailSchema.safeParse(email);
-    if (!e.success) {
-      return toast.error("Enter your email above first, then tap 'Forgot password?'");
-    }
+    if (!e.success) return toast.error("Enter your email above first, then tap 'Forgot password?'");
     setBusy(true);
     const { error } = await supabase.auth.resetPasswordForEmail(e.data, {
       redirectTo: `${window.location.origin}/`,
@@ -148,37 +192,61 @@ export default function Auth() {
 
       <section className="flex-1 flex items-start justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          {signupSent ? (
-            <div className="text-center">
+          {step === "otp" ? (
+            <>
               <div className="mx-auto w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
-                <MailCheck className="w-7 h-7 text-brand" />
+                <Mail className="w-7 h-7 text-brand" />
               </div>
-              <h1 className="font-serif text-2xl text-foreground mb-2">Verify your email</h1>
-              <p className="text-sm text-muted-foreground mb-6">
-                We sent a verification link to <span className="font-medium text-foreground">{email}</span>.
-                Click the link in that email to activate your account, then come back and sign in.
+              <h1 className="font-serif text-3xl text-foreground mb-1 text-center">
+                Enter verification code
+              </h1>
+              <p className="text-sm text-muted-foreground mb-6 text-center">
+                We sent a 6-digit code to{" "}
+                <span className="font-medium text-foreground">{email}</span>.
               </p>
+
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="••••••"
+                className="w-full border border-border rounded-md px-4 py-3 text-center text-xl tracking-[0.5em] font-semibold outline-none focus:border-brand"
+              />
+
               <button
                 type="button"
-                onClick={resendVerification}
-                disabled={busy}
-                className="w-full inline-flex items-center justify-center gap-2 border border-border rounded-full py-3 text-sm font-medium hover:bg-muted transition disabled:opacity-60"
+                onClick={verifyOtp}
+                disabled={busy || otp.length !== 6}
+                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
               >
-                {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-                Resend verification email
+                {busy && <Loader2 className="w-4 h-4 animate-spin" />}
+                Verify & Continue
               </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSignupSent(false);
-                  setMode("signin");
-                  setPassword("");
-                }}
-                className="mt-4 text-sm text-brand font-medium"
-              >
-                Back to sign in
-              </button>
-            </div>
+
+              <div className="mt-4 flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("form");
+                    setOtp("");
+                  }}
+                  className="text-foreground/70 hover:text-brand"
+                >
+                  Change email
+                </button>
+                <button
+                  type="button"
+                  onClick={sendOtp}
+                  disabled={resendIn > 0 || busy}
+                  className="text-brand font-medium disabled:text-muted-foreground"
+                >
+                  {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
+                </button>
+              </div>
+            </>
           ) : (
             <>
               <h1 className="font-serif text-3xl text-foreground mb-1">
@@ -187,14 +255,14 @@ export default function Auth() {
               <p className="text-sm text-muted-foreground mb-7">
                 {mode === "signin"
                   ? "Sign in with your email and password."
-                  : "Sign up with your email — we'll send a verification link."}
+                  : "Sign up — we'll email you a 6-digit code to verify."}
               </p>
 
               {/* Tabs */}
               <div className="flex bg-muted rounded-full p-1 mb-6 text-sm">
                 <button
                   type="button"
-                  onClick={() => setMode("signin")}
+                  onClick={() => switchMode("signin")}
                   className={`flex-1 py-2 rounded-full transition ${
                     mode === "signin" ? "bg-background shadow-sm font-semibold" : "text-muted-foreground"
                   }`}
@@ -203,7 +271,7 @@ export default function Auth() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMode("signup")}
+                  onClick={() => switchMode("signup")}
                   className={`flex-1 py-2 rounded-full transition ${
                     mode === "signup" ? "bg-background shadow-sm font-semibold" : "text-muted-foreground"
                   }`}
@@ -274,7 +342,7 @@ export default function Auth() {
                   className="mt-2 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
                 >
                   {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {mode === "signin" ? "Sign in" : "Create account"}
+                  {mode === "signin" ? "Sign in" : "Send verification code"}
                 </button>
               </form>
 
