@@ -17,6 +17,21 @@ import Certifications from "./pages/Certifications";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
+import AdminLayout from "@/components/admin/AdminLayout";
+import { RequireStaff } from "@/components/admin/RequireStaff";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminCategories from "./pages/admin/AdminCategories";
+import AdminCollections from "./pages/admin/AdminCollections";
+import AdminBanners from "./pages/admin/AdminBanners";
+import AdminOffers from "./pages/admin/AdminOffers";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
+import AdminStoreInfo from "./pages/admin/AdminStoreInfo";
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminEnquiries from "./pages/admin/AdminEnquiries";
+import AdminUsers from "./pages/admin/AdminUsers";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -40,6 +55,37 @@ const App = () => (
               <Route path="/certifications" element={<Certifications />} />
             </Route>
             <Route path="/auth" element={<Auth />} />
+
+            {/* Admin */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={
+                <RequireStaff>
+                  <AdminLayout />
+                </RequireStaff>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="collections" element={<AdminCollections />} />
+              <Route path="banners" element={<AdminBanners />} />
+              <Route path="offers" element={<AdminOffers />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="store-info" element={<AdminStoreInfo />} />
+              <Route path="appointments" element={<AdminAppointments />} />
+              <Route path="enquiries" element={<AdminEnquiries />} />
+              <Route
+                path="users"
+                element={
+                  <RequireStaff requireAdmin>
+                    <AdminUsers />
+                  </RequireStaff>
+                }
+              />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
