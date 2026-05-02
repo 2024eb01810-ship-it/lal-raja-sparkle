@@ -17,11 +17,11 @@ export function Footer() {
         <div>
           <h4 className="text-xs uppercase tracking-[0.25em] text-gold mb-4">Explore</h4>
           <ul className="space-y-2 text-sm text-background/80">
-            <li><Link to="/collections" className="hover:text-gold transition-colors">Collections</Link></li>
+            <li><Link to="/collections" className="hover:text-gold transition-colors">Shop</Link></li>
             <li><Link to="/bridal" className="hover:text-gold transition-colors">Bridal</Link></li>
             <li><Link to="/offers" className="hover:text-gold transition-colors">Offers</Link></li>
             <li><Link to="/about" className="hover:text-gold transition-colors">About</Link></li>
-            <li><Link to="/certifications" className="hover:text-gold transition-colors">Certifications</Link></li>
+            <li><Link to="/certifications" className="hover:text-gold transition-colors">Trust</Link></li>
           </ul>
         </div>
         <div>
