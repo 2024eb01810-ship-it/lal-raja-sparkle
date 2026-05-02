@@ -1,0 +1,2 @@
+UPDATE public.store_info SET name = 'Lal Raja Gold And Diamond Jewellery' WHERE name = 'Lal Raja Jewels';
+ALTER TABLE public.store_info ALTER COLUMN name SET DEFAULT 'Lal Raja Gold And Diamond Jewellery';
