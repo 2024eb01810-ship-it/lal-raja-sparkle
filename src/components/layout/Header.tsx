@@ -139,10 +139,10 @@ export function Header() {
             </form>
             <Link
               to="/store"
-              className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium border border-border rounded-md px-2.5 py-1.5 text-foreground/80 hover:border-brand hover:text-brand leading-tight"
+              aria-label="Set location"
+              className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full text-foreground/70 hover:text-brand hover:bg-muted"
             >
-              <span>Set<br/>Location</span>
-              <MapPin className="w-3.5 h-3.5" />
+              <MapPin className="w-[18px] h-[18px]" />
             </Link>
           </div>
         </div>
