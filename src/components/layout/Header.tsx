@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Phone, MessageCircle, Menu, X } from "lucide-react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Phone, MessageCircle, Menu, X, Search, MapPin, Store, Heart, ShoppingBag, User } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { phoneLink, whatsappLink } from "@/lib/whatsapp";
 
 const NAV = [
-  { to: "/", label: "Home" },
-  { to: "/collections", label: "Shop" },
+  { to: "/collections", label: "All Jewellery" },
   { to: "/bridal", label: "Bridal" },
   { to: "/offers", label: "Offers" },
   { to: "/about", label: "About" },
@@ -16,100 +15,146 @@ const NAV = [
 ];
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    navigate(q ? `/collections?q=${encodeURIComponent(q)}` : "/collections");
+  };
+
   return (
-    <header
-      className={`sticky top-0 z-header transition-all duration-500 ${
-        scrolled ? "glass-blur shadow-soft" : "bg-background"
-      }`}
-    >
-      <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-3 lg:gap-6 h-16 md:h-20">
-        <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja Gold And Diamond Jewellery — home">
-          <img src={logo} alt="Lal Raja Gold And Diamond Jewellery" className="h-9 md:h-12 w-auto shrink-0" width={48} height={48} />
-          <span className="font-serif text-base sm:text-lg md:text-xl lg:text-2xl font-medium tracking-wide truncate">
-            Lal Raja
-          </span>
-        </Link>
+    <header className="sticky top-0 z-header shadow-soft">
+      {/* Row 1 — Magenta brand bar */}
+      <div className="bg-gradient-brand text-brand-foreground">
+        <div className="container-px mx-auto max-w-7xl flex items-center gap-3 lg:gap-6 h-16 md:h-20">
+          <Link to="/" className="flex items-center gap-2 min-w-0 shrink-0" aria-label="Lal Raja — home">
+            <img src={logo} alt="Lal Raja Gold And Diamond Jewellery" className="h-9 md:h-11 w-auto shrink-0" width={44} height={44} />
+            <span className="font-serif text-lg md:text-2xl font-medium tracking-wide truncate">
+              Lal Raja
+            </span>
+          </Link>
 
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-8 flex-1 justify-center min-w-0 px-2">
-          {NAV.map((n) => (
-            <NavLink
-              key={n.to}
-              to={n.to}
-              end={n.to === "/"}
-              className={({ isActive }) =>
-                `text-[11px] xl:text-xs uppercase tracking-[0.18em] xl:tracking-[0.22em] transition-colors hover:text-gold whitespace-nowrap ${
-                  isActive ? "text-gold" : "text-foreground/80"
-                }`
-              }
+          {/* Centered search — desktop */}
+          <form onSubmit={onSearch} className="hidden md:flex flex-1 max-w-2xl mx-auto items-center">
+            <div className="relative w-full">
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="What are you looking for today?"
+                aria-label="Search jewellery"
+                className="w-full bg-transparent border-b border-brand-foreground/40 focus:border-brand-foreground outline-none text-sm placeholder:text-brand-foreground/70 py-2 pr-9"
+              />
+              <button type="submit" aria-label="Search" className="absolute right-0 top-1/2 -translate-y-1/2 p-1 hover:opacity-80">
+                <Search className="w-5 h-5" />
+              </button>
+            </div>
+          </form>
+
+          {/* Right icon group */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto md:ml-0">
+            <Link to="/store" aria-label="Stores" className="hidden sm:inline-flex flex-col items-center justify-center px-2 hover:opacity-80">
+              <Store className="w-5 h-5" />
+              <span className="text-[10px] mt-0.5 hidden lg:block">Stores</span>
+            </Link>
+            <a href={phoneLink} aria-label="Call store" className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10">
+              <Phone className="w-4 h-4" />
+            </a>
+            <a
+              href={whatsappLink("Hello Lal Raja, I have an enquiry.")}
+              target="_blank" rel="noreferrer" aria-label="WhatsApp"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#25D366] text-white hover:opacity-90"
             >
-              {n.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          <a
-            href={phoneLink}
-            aria-label="Call store"
-            className="hidden sm:inline-flex lg:hidden xl:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
-          >
-            <Phone className="w-4 h-4" />
-          </a>
-          <a
-            href={whatsappLink("Hello Lal Raja Gold And Diamond Jewellery, I have an enquiry.")}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="WhatsApp"
-            className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#25D366] text-white hover:opacity-90 transition-opacity"
-          >
-            <MessageCircle className="w-4 h-4" />
-          </a>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-secondary transition-colors"
-          >
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+              <MessageCircle className="w-4 h-4" />
+            </a>
+            <Link to="/contact" aria-label="Account" className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10">
+              <User className="w-5 h-5" />
+            </Link>
+            <button
+              type="button" onClick={() => setOpen((v) => !v)}
+              aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open}
+              className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-brand-foreground/10"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile search row */}
+        <form onSubmit={onSearch} className="md:hidden container-px mx-auto max-w-7xl pb-3">
+          <div className="relative">
+            <input
+              type="search" value={query} onChange={(e) => setQuery(e.target.value)}
+              placeholder="What are you looking for today?" aria-label="Search jewellery"
+              className="w-full bg-brand-foreground/10 placeholder:text-brand-foreground/70 text-brand-foreground rounded-full pl-4 pr-10 py-2 text-sm outline-none focus:bg-brand-foreground/15"
+            />
+            <button type="submit" aria-label="Search" className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5">
+              <Search className="w-4 h-4" />
+            </button>
+          </div>
+        </form>
       </div>
 
-      {/* Mobile / tablet menu — sits above page, below overlays */}
-      {open && (
-        <div className="lg:hidden border-t border-border bg-background animate-fade-in z-mobile-menu relative shadow-soft max-h-[calc(100dvh-4rem)] overflow-y-auto">
-          <nav className="container-px mx-auto max-w-7xl py-4 flex flex-col">
+      {/* Row 2 — White nav bar (desktop) */}
+      <div className="hidden lg:block bg-background border-b border-border">
+        <div className="container-px mx-auto max-w-7xl flex items-center justify-between gap-4 h-12">
+          <nav className="flex items-center gap-6 xl:gap-8 min-w-0">
             {NAV.map((n) => (
               <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === "/"}
-                onClick={() => setOpen(false)}
+                key={n.to} to={n.to} end={n.to === "/"}
                 className={({ isActive }) =>
-                  `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 last:border-0 ${
-                    isActive ? "text-gold" : "text-foreground/85"
+                  `text-[12px] xl:text-[13px] font-medium tracking-wide transition-colors hover:text-brand whitespace-nowrap ${
+                    isActive ? "text-brand" : "text-foreground/85"
                   }`
                 }
               >
                 {n.label}
               </NavLink>
             ))}
+          </nav>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-[12px] flex items-center gap-2">
+              <span className="inline-block w-2 h-2 rounded-full bg-gold" aria-hidden />
+              <span className="text-muted-foreground">Live Gold Rate:</span>
+              <span className="font-semibold text-brand">₹—/g (22kt)</span>
+            </span>
+            <Link to="/store" className="inline-flex items-center gap-1.5 text-[12px] font-medium border border-border rounded-full px-3 py-1 hover:border-brand hover:text-brand transition-colors">
+              <MapPin className="w-3.5 h-3.5" /> Set Location
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile / tablet menu */}
+      {open && (
+        <div className="lg:hidden border-t border-border bg-background animate-fade-in z-mobile-menu relative shadow-soft max-h-[calc(100dvh-4rem)] overflow-y-auto">
+          <nav className="container-px mx-auto max-w-7xl py-4 flex flex-col">
+            <NavLink to="/" end onClick={() => setOpen(false)} className={({ isActive }) => `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 ${isActive ? "text-brand" : "text-foreground/85"}`}>Home</NavLink>
+            {NAV.map((n) => (
+              <NavLink
+                key={n.to} to={n.to} end={n.to === "/"}
+                onClick={() => setOpen(false)}
+                className={({ isActive }) =>
+                  `py-3 text-sm uppercase tracking-[0.2em] border-b border-border/60 last:border-0 ${
+                    isActive ? "text-brand" : "text-foreground/85"
+                  }`
+                }
+              >
+                {n.label}
+              </NavLink>
+            ))}
+            <div className="mt-3 flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Live Gold Rate</span>
+              <span className="font-semibold text-brand">₹—/g (22kt)</span>
+            </div>
           </nav>
         </div>
       )}

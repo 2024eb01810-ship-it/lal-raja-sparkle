@@ -56,6 +56,13 @@ export default {
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+          dark: "hsl(var(--brand-dark))",
+          soft: "hsl(var(--brand-soft))",
+          cream: "hsl(var(--brand-cream))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -76,6 +83,7 @@ export default {
         'gradient-gold': 'var(--gradient-gold)',
         'gradient-blush': 'var(--gradient-blush)',
         'gradient-hero-overlay': 'var(--gradient-hero-overlay)',
+        'gradient-brand': 'var(--gradient-brand)',
       },
       boxShadow: {
         luxury: 'var(--shadow-luxury)',

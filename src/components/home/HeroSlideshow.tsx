@@ -3,22 +3,19 @@ import { Link } from "react-router-dom";
 import { useBanners } from "@/hooks/useContent";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const FALLBACK = {
+const FALLBACK = [{
   id: "fallback",
   image_url: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=1920",
-  title: "Heritage in every hallmark",
+  title: "Tanvika",
   subtitle:
-    "Bridal sets, polki, kundan and certified diamonds — handcrafted in Vijayawada since 1972.",
-  cta_label: "Explore Collections",
+    "Presenting our latest temple jewellery collection — where sacred artistry meets timeless devotion and grace.",
+  cta_label: "Shop Now",
   cta_link: "/collections",
-} as const;
+}] as const;
 
 export function HeroSlideshow() {
   const { data: banners, isLoading, isError } = useBanners();
   const [idx, setIdx] = useState(0);
-  const [scrollY, setScrollY] = useState(0);
-  // Delayed skeleton: only show after 250ms so fast networks don't flash a
-  // grey block, but slow 3G/4G users still see clear loading feedback.
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   useEffect(() => {
@@ -33,81 +30,79 @@ export function HeroSlideshow() {
     return () => clearInterval(t);
   }, [banners]);
 
-  useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Reserve hero height during loading so layout never shifts.
   if (isLoading) {
     return (
-      <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden bg-secondary">
+      <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-secondary">
         {showSkeleton && <Skeleton className="absolute inset-0 w-full h-full" />}
       </section>
     );
   }
 
-  // Fallback: shown when banners fail to load OR are empty so the page is
-  // never blank above the fold.
   const slides: any[] =
-    !isError && banners && banners.length > 0 ? banners : [FALLBACK];
+    !isError && banners && banners.length > 0 ? banners : (FALLBACK as any);
 
   return (
-    <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden">
-      {slides.map((b, i) => (
-        <div
-          key={b.id}
-          className={`absolute inset-0 transition-opacity duration-[1500ms] ${
-            i === idx ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
-        >
-          <img
-            src={b.image_url}
-            alt={b.title ?? "Lal Raja Gold And Diamond Jewellery"}
-            className="w-full h-full object-cover"
-            style={{ transform: `translateY(${scrollY * 0.25}px) scale(1.05)` }}
-            loading={i === 0 ? "eager" : "lazy"}
-            fetchPriority={i === 0 ? "high" : "auto"}
-          />
-          <div className="absolute inset-0 bg-gradient-hero-overlay" />
-          <div className="absolute inset-0 flex items-end md:items-center">
-            <div className="container-px max-w-7xl mx-auto pb-16 md:pb-0 w-full">
-              <div className="max-w-xl text-background animate-fade-up">
-                <p className="text-xs uppercase tracking-[0.4em] text-gold mb-4">
-                  Lal Raja Gold &amp; Diamond Jewellery
-                </p>
-                <h1 className="font-serif text-4xl sm:text-5xl md:text-7xl font-medium leading-[1.05] mb-4">
-                  {b.title}
-                </h1>
-                {b.subtitle && (
-                  <p className="text-base md:text-lg text-background/85 mb-7 max-w-md">{b.subtitle}</p>
-                )}
-                {b.cta_label && b.cta_link && (
-                  <Link
-                    to={b.cta_link}
-                    className="luxury-btn text-foreground bg-background hover:text-foreground"
-                  >
-                    {b.cta_label}
-                  </Link>
-                )}
+    <section className="relative w-full overflow-hidden bg-foreground">
+      <div className="relative w-full h-[60vh] md:h-[80vh]">
+        {slides.map((b, i) => (
+          <div
+            key={b.id}
+            className={`absolute inset-0 transition-opacity duration-[1200ms] ${
+              i === idx ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <img
+              src={b.image_url}
+              alt={b.title ?? "Lal Raja Gold And Diamond Jewellery"}
+              className="w-full h-full object-cover"
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+            />
+            {/* Gradient overlay — darker on right so text reads */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-black/55" />
+
+            <div className="absolute inset-0 flex items-center">
+              <div className="container-px max-w-7xl mx-auto w-full">
+                <div className="ml-auto md:w-1/2 max-w-xl text-background animate-fade-up text-center md:text-left md:pr-4">
+                  <h1 className="font-serif italic text-5xl sm:text-6xl md:text-8xl font-light leading-[0.95] mb-3 lowercase">
+                    {b.title}
+                  </h1>
+                  <div className="h-px w-24 bg-background/50 mx-auto md:mx-0 mb-4" />
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-background/85 mb-5">
+                    Crafted for prosperity · Inspired by divinity
+                  </p>
+                  {b.subtitle && (
+                    <p className="text-sm md:text-base text-background/90 mb-7 max-w-md mx-auto md:mx-0 leading-relaxed">
+                      {b.subtitle}
+                    </p>
+                  )}
+                  {b.cta_label && b.cta_link && (
+                    <Link
+                      to={b.cta_link}
+                      className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-brand-cream text-brand font-semibold text-sm tracking-wide hover:bg-background transition-colors shadow-soft"
+                    >
+                      {b.cta_label}
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
-      {slides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setIdx(i)}
-              aria-label={`Slide ${i + 1}`}
-              className={`h-1 transition-all ${i === idx ? "w-10 bg-gold" : "w-5 bg-background/50"}`}
-            />
-          ))}
-        </div>
-      )}
+        ))}
+
+        {slides.length > 1 && (
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIdx(i)}
+                aria-label={`Slide ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-8 bg-brand" : "w-3 bg-background/60 hover:bg-background"}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
