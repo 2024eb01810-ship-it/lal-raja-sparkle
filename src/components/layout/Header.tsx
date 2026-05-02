@@ -180,7 +180,7 @@ export function Header() {
       </div>
 
       {/* Mobile / tablet menu — Malabar-style full-width drawer */}
-      {open && (
+      {open && createPortal(
         <>
           {/* Backdrop covers the entire viewport, including header & bottom nav */}
           <div
@@ -191,7 +191,7 @@ export function Header() {
           />
           {/* Drawer — full viewport, sits above header (40) and bottom nav (45) */}
           <div
-            className="lg:hidden fixed inset-0 bg-background animate-fade-in flex flex-col shadow-strong"
+            className="lg:hidden fixed inset-0 bg-background animate-fade-in flex flex-col shadow-strong overflow-hidden"
             style={{ zIndex: 90 }}
           >
             {/* Welcome header */}
