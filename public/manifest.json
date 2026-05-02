@@ -1,0 +1,12 @@
+{
+  "name": "Lal Raja Jewels",
+  "short_name": "Lal Raja",
+  "description": "Luxury jewellery house in Vijayawada",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#C9A84C",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }
+  ]
+}
