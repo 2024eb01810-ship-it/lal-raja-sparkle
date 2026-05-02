@@ -50,14 +50,14 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-7 flex-1 justify-center min-w-0">
+        <nav className="hidden lg:flex items-center gap-3 xl:gap-6 flex-1 justify-center min-w-0 px-2">
           {NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
-                `text-[11px] xl:text-xs uppercase tracking-[0.12em] xl:tracking-[0.18em] transition-colors hover:text-gold whitespace-nowrap ${
+                `text-[10px] xl:text-xs uppercase tracking-[0.1em] xl:tracking-[0.18em] transition-colors hover:text-gold whitespace-nowrap ${
                   isActive ? "text-gold" : "text-foreground/80"
                 }`
               }
