@@ -181,14 +181,18 @@ export function Header() {
       {/* Mobile / tablet menu — Malabar-style full-width drawer */}
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop covers the entire viewport, including header & bottom nav */}
           <div
-            className="lg:hidden fixed inset-0 top-[8.25rem] bg-black/40 z-mobile-menu animate-fade-in"
+            className="lg:hidden fixed inset-0 bg-black/40 animate-fade-in"
+            style={{ zIndex: 80 }}
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          {/* Drawer */}
-          <div className="lg:hidden fixed left-0 right-0 top-[8.25rem] bottom-0 bg-background z-mobile-menu animate-fade-in flex flex-col shadow-strong">
+          {/* Drawer — full viewport, sits above header (40) and bottom nav (45) */}
+          <div
+            className="lg:hidden fixed inset-0 bg-background animate-fade-in flex flex-col shadow-strong"
+            style={{ zIndex: 90 }}
+          >
             {/* Welcome header */}
             <div className="flex items-center justify-between px-5 pt-5 pb-3 shrink-0">
               <h2 className="font-serif text-2xl text-foreground">Welcome!</h2>
