@@ -254,18 +254,21 @@ export type Database = {
           collection_id: string | null
           created_at: string
           description: string | null
+          enquiry_message: string | null
           featured: boolean
           id: string
           images: Json
           metal: string | null
           name: string
           occasion: string | null
+          phone_number: string | null
           price_max: number | null
           price_min: number | null
           slug: string
           stones: string | null
           updated_at: string
           weight_grams: number | null
+          whatsapp_number: string | null
         }
         Insert: {
           active?: boolean
@@ -273,18 +276,21 @@ export type Database = {
           collection_id?: string | null
           created_at?: string
           description?: string | null
+          enquiry_message?: string | null
           featured?: boolean
           id?: string
           images?: Json
           metal?: string | null
           name: string
           occasion?: string | null
+          phone_number?: string | null
           price_max?: number | null
           price_min?: number | null
           slug: string
           stones?: string | null
           updated_at?: string
           weight_grams?: number | null
+          whatsapp_number?: string | null
         }
         Update: {
           active?: boolean
@@ -292,18 +298,21 @@ export type Database = {
           collection_id?: string | null
           created_at?: string
           description?: string | null
+          enquiry_message?: string | null
           featured?: boolean
           id?: string
           images?: Json
           metal?: string | null
           name?: string
           occasion?: string | null
+          phone_number?: string | null
           price_max?: number | null
           price_min?: number | null
           slug?: string
           stones?: string | null
           updated_at?: string
           weight_grams?: number | null
+          whatsapp_number?: string | null
         }
         Relationships: [
           {
