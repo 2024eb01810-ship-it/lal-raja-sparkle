@@ -288,7 +288,8 @@ export function Header() {
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </header>
   );
