@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/external-client";
 import { useProducts, useTestimonials } from "@/hooks/useContent";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Star } from "lucide-react";
