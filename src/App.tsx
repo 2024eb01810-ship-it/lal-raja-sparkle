@@ -31,6 +31,7 @@ import AdminStoreInfo from "./pages/admin/AdminStoreInfo";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminEnquiries from "./pages/admin/AdminEnquiries";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminAccessRequests from "./pages/admin/AdminAccessRequests";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,14 @@ const App = () => (
                 element={
                   <RequireStaff requireAdmin>
                     <AdminUsers />
+                  </RequireStaff>
+                }
+              />
+              <Route
+                path="access-requests"
+                element={
+                  <RequireStaff requireAdmin>
+                    <AdminAccessRequests />
                   </RequireStaff>
                 }
               />

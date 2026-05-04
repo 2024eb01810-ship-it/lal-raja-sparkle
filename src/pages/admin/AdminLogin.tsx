@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Seo } from "@/components/common/Seo";
 import logo from "@/assets/logo.png";
 import { Loader2 } from "lucide-react";
+import { RequestAccessDialog } from "@/components/admin/RequestAccessDialog";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -59,9 +60,29 @@ export default function AdminLogin() {
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in"}
             </Button>
             {user && !authLoading && !isStaff && (
-              <p className="text-xs text-destructive text-center">
-                You are signed in but have no staff role. Ask an admin to grant you access.
-              </p>
+              <div className="text-center space-y-2">
+                <p className="text-xs text-destructive">
+                  You are signed in but have no staff role.
+                </p>
+                <RequestAccessDialog
+                  trigger={
+                    <Button type="button" variant="outline" size="sm" className="w-full">
+                      Request admin access
+                    </Button>
+                  }
+                />
+              </div>
+            )}
+            {!user && (
+              <div className="text-center">
+                <RequestAccessDialog
+                  trigger={
+                    <Button type="button" variant="link" size="sm" className="text-xs">
+                      Need access? Request it
+                    </Button>
+                  }
+                />
+              </div>
             )}
           </div>
         </form>
