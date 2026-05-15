@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif+Telugu:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&family=Noto+Serif+Telugu:wght@400;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,8 +18,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Primary: blush pink */
-    --primary: 343 75% 80%;            /* #F2A7BB */
+    /* Primary: gold */
+    --primary: 45 53% 54%;             /* #C9A84C */
     --primary-foreground: 0 0% 10%;
 
     /* Secondary: soft cream */
@@ -36,13 +36,13 @@
     --gold-light: 45 60% 72%;
     --gold-dark: 42 55% 38%;
 
-    /* Brand: Malabar-style magenta */
-    --brand: 330 75% 38%;              /* deep magenta */
+    /* Brand: deep dark maroon */
+    --brand: 0 60% 11%;                /* #2C0A0A */
     --brand-foreground: 0 0% 100%;
-    --brand-dark: 330 80% 28%;
-    --brand-soft: 330 60% 96%;
+    --brand-dark: 0 65% 8%;            /* even darker maroon */
+    --brand-soft: 35 30% 95%;          /* warm cream tint */
     --brand-cream: 35 50% 94%;         /* hero CTA cream */
-    --gradient-brand: linear-gradient(90deg, hsl(330 80% 30%) 0%, hsl(330 75% 42%) 50%, hsl(325 70% 50%) 100%);
+    --gradient-brand: linear-gradient(90deg, hsl(0 60% 9%) 0%, hsl(0 55% 13%) 50%, hsl(0 50% 16%) 100%);
 
     --muted: 38 20% 92%;
     --muted-foreground: 0 0% 35%;
@@ -59,8 +59,12 @@
     /* Gradients */
     --gradient-gold: linear-gradient(135deg, hsl(45 60% 72%), hsl(45 53% 54%), hsl(42 55% 38%));
     --gradient-gold-shimmer: linear-gradient(110deg, hsl(45 53% 54%) 30%, hsl(45 80% 85%) 50%, hsl(45 53% 54%) 70%);
-    --gradient-blush: linear-gradient(135deg, hsl(343 75% 80%), hsl(343 60% 88%));
+    --gradient-blush: linear-gradient(135deg, hsl(35 30% 95%), hsl(38 25% 92%));
     --gradient-hero-overlay: linear-gradient(180deg, hsl(0 0% 0% / 0.1) 0%, hsl(0 0% 0% / 0.55) 100%);
+
+    /* Footer */
+    --footer-bg: 0 0% 5%;             /* #0D0D0D */
+    --footer-border: 45 53% 54%;       /* gold dividers */
 
     /* Shadows */
     --shadow-luxury: 0 20px 50px -20px hsl(45 53% 54% / 0.25);
@@ -121,6 +125,49 @@
     z-index: -1;
   }
   .luxury-btn:hover::before { background-position: 0 0; }
+
+  /* ── Gold CTA button (Shop Now, primary actions) ── */
+  .btn-gold {
+    @apply inline-flex items-center justify-center px-8 py-3 rounded-full font-semibold text-sm tracking-wide transition-all duration-300;
+    background-color: #C9A84C;
+    color: #1A1A1A;
+    box-shadow: 0 4px 16px -4px rgba(201,168,76,0.45);
+  }
+  .btn-gold:hover {
+    background-color: #D4B85A;
+    box-shadow: 0 6px 24px -6px rgba(201,168,76,0.6);
+    transform: translateY(-1px);
+  }
+
+  /* ── Product card gold hover border ── */
+  .product-card-hover {
+    @apply transition-all duration-500;
+    border: 1px solid transparent;
+  }
+  .group:hover .product-card-hover,
+  .product-card-hover:hover {
+    border-color: #C9A84C;
+    box-shadow: 0 8px 30px -12px rgba(201,168,76,0.3);
+  }
+
+  /* ── Category card gold shimmer on hover ── */
+  .category-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(201,168,76,0.25) 50%, transparent 70%);
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    opacity: 0;
+    transition: opacity 0.4s ease, background-position 0.8s var(--ease-luxury);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: inherit;
+  }
+  .group:hover .category-shimmer::after {
+    opacity: 1;
+    background-position: -100% 0;
+  }
 
   .telugu { font-family: 'Noto Serif Telugu', serif; }
 

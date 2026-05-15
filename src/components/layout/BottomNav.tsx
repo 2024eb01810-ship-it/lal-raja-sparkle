@@ -27,7 +27,7 @@ export function BottomNav() {
               end={it.end}
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center gap-1 h-full px-1 text-[10px] tracking-wide uppercase truncate ${
-                  isActive ? "text-gold" : "text-foreground/70"
+                  isActive ? "text-[#C9A84C]" : "text-foreground/70"
                 }`
               }
             >

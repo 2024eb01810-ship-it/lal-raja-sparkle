@@ -204,7 +204,7 @@ export default function Auth() {
           {step === "otp" ? (
             <>
               <div className="mx-auto w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Mail className="w-7 h-7 text-brand" />
+                <Mail className="w-7 h-7 text-[#C9A84C]" />
               </div>
               <h1 className="font-serif text-3xl text-foreground mb-1 text-center">
                 Enter verification code
@@ -222,14 +222,14 @@ export default function Auth() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="••••••"
-                className="w-full border border-border rounded-md px-4 py-3 text-center text-xl tracking-[0.5em] font-semibold outline-none focus:border-brand"
+                className="w-full border border-border rounded-md px-4 py-3 text-center text-xl tracking-[0.5em] font-semibold outline-none focus:border-[#C9A84C]"
               />
 
               <button
                 type="button"
                 onClick={verifyOtp}
                 disabled={busy || otp.length !== 6}
-                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
+                className="mt-5 w-full inline-flex items-center justify-center gap-2 bg-[#C9A84C] text-[#1A1A1A] rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60 shadow-[0_4px_16px_-4px_rgba(201,168,76,0.45)]"
               >
                 {busy && <Loader2 className="w-4 h-4 animate-spin" />}
                 Verify & Continue
@@ -242,7 +242,7 @@ export default function Auth() {
                     setStep("form");
                     setOtp("");
                   }}
-                  className="text-foreground/70 hover:text-brand"
+                  className="text-foreground/70 hover:text-[#C9A84C]"
                 >
                   Change email
                 </button>
@@ -250,7 +250,7 @@ export default function Auth() {
                   type="button"
                   onClick={sendOtp}
                   disabled={resendIn > 0 || busy}
-                  className="text-brand font-medium disabled:text-muted-foreground"
+                  className="text-[#C9A84C] font-medium disabled:text-muted-foreground"
                 >
                   {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
                 </button>
@@ -305,7 +305,7 @@ export default function Auth() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Your name"
-                      className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                      className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-[#C9A84C]"
                     />
                   </div>
                 )}
@@ -318,7 +318,7 @@ export default function Auth() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-[#C9A84C]"
                   />
                 </div>
 
@@ -329,7 +329,7 @@ export default function Auth() {
                       <button
                         type="button"
                         onClick={forgotPassword}
-                        className="text-xs text-brand font-medium"
+                        className="text-xs text-[#C9A84C] font-medium"
                       >
                         Forgot password?
                       </button>
@@ -341,14 +341,14 @@ export default function Auth() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
-                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-brand"
+                    className="w-full bg-background border border-border rounded-md px-3 py-3 text-sm outline-none focus:border-[#C9A84C]"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={busy}
-                  className="mt-2 w-full inline-flex items-center justify-center gap-2 bg-brand text-brand-foreground rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60"
+                  className="mt-2 w-full inline-flex items-center justify-center gap-2 bg-[#C9A84C] text-[#1A1A1A] rounded-full py-3 text-sm font-semibold hover:opacity-95 transition disabled:opacity-60 shadow-[0_4px_16px_-4px_rgba(201,168,76,0.45)]"
                 >
                   {busy && <Loader2 className="w-4 h-4 animate-spin" />}
                   {mode === "signin" ? "Sign in" : "Send verification code"}

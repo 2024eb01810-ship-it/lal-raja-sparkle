@@ -22,7 +22,7 @@ export function CategoryScroller() {
                   to={`/collections/${c.slug}`}
                   className="group min-w-[160px] md:min-w-0 snap-start"
                 >
-                  <div className="image-zoom-wrap aspect-[3/4] bg-secondary rounded-2xl overflow-hidden shadow-soft relative">
+                  <div className="image-zoom-wrap aspect-[3/4] bg-secondary rounded-2xl overflow-hidden shadow-soft relative category-shimmer">
                     <img
                       src={c.image_url ?? ""}
                       alt={c.name}

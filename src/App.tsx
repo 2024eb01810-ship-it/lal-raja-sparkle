@@ -16,6 +16,8 @@ import Contact from "./pages/Contact";
 import Certifications from "./pages/Certifications";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Wishlist from "./pages/Wishlist";
+import Account from "./pages/Account";
 
 import AdminLayout from "@/components/admin/AdminLayout";
 import { RequireStaff } from "@/components/admin/RequireStaff";
@@ -32,6 +34,10 @@ import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminEnquiries from "./pages/admin/AdminEnquiries";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminAccessRequests from "./pages/admin/AdminAccessRequests";
+import AdminAIContent from "./pages/admin/AdminAIContent";
+import AdminUploadProduct from "./pages/admin/AdminUploadProduct";
+import AdminAddProduct from "./pages/admin/AdminAddProduct";
+import BulkUpload from "./pages/admin/BulkUpload";
 
 // ── Agent 2 & 3 ──────────────────────────────────────────────
 import SmartCouponEngine from "@/components/SmartCouponEngine";
@@ -59,6 +65,8 @@ const AppContent = () => {
             <Route path="/store" element={<Store />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/certifications" element={<Certifications />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/account" element={<Account />} />
           </Route>
           <Route path="/auth" element={<Auth />} />
 
@@ -90,14 +98,11 @@ const AppContent = () => {
                 </RequireStaff>
               }
             />
-            <Route
-              path="access-requests"
-              element={
-                <RequireStaff requireAdmin>
-                  <AdminAccessRequests />
-                </RequireStaff>
-              }
-            />
+            <Route path="access-requests" element={<RequireStaff requireAdmin><AdminAccessRequests /></RequireStaff>} />
+            <Route path="ai-content" element={<AdminAIContent />} />
+            <Route path="products/new" element={<AdminAddProduct />} />
+            <Route path="upload-product" element={<AdminUploadProduct />} />
+            <Route path="bulk-upload" element={<BulkUpload />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

@@ -18,15 +18,15 @@ export function ImageUploader({ value, onChange, folder = "uploads", label = "Im
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("Image too large (max 8 MB)");
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Image too large (max 50 MB)");
       return;
     }
     setUploading(true);
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${folder}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from("media").upload(path, file, {
-      cacheControl: "31536000",
+      cacheControl: "3600",
       upsert: false,
     });
     if (error) {

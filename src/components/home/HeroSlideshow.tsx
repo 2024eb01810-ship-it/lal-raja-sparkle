@@ -32,8 +32,8 @@ export function HeroSlideshow() {
 
   if (isLoading) {
     return (
-      <section className="relative w-full h-[42vh] md:h-[80vh] overflow-hidden bg-secondary">
-        {showSkeleton && <Skeleton className="absolute inset-0 w-full h-full" />}
+      <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-[#2C0A0A]">
+        {showSkeleton && <Skeleton className="absolute inset-0 w-full h-full opacity-20" />}
       </section>
     );
   }
@@ -42,62 +42,66 @@ export function HeroSlideshow() {
     !isError && banners && banners.length > 0 ? banners : (FALLBACK as any);
 
   return (
-    <section className="relative w-full overflow-hidden bg-foreground">
-      <div className="relative w-full h-[42vh] md:h-[80vh]">
+    <section className="relative w-full bg-[#2C0A0A] overflow-hidden">
+      <div className="relative w-full h-[500px] md:h-[600px]">
         {slides.map((b, i) => (
           <div
             key={b.id}
-            className={`absolute inset-0 transition-opacity duration-[1200ms] ${
-              i === idx ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`absolute inset-0 flex flex-col md:flex-row transition-opacity duration-[800ms] ease-in-out ${
+              i === idx ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"
             }`}
           >
-            <img
-              src={b.image_url}
-              alt={b.title ?? "Lal Raja Gold And Diamond Jewellery"}
-              className="w-full h-full object-cover"
-              loading={i === 0 ? "eager" : "lazy"}
-              fetchPriority={i === 0 ? "high" : "auto"}
-            />
-            {/* Gradient overlay — darker on right so text reads */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-black/55" />
-
-            <div className="absolute inset-0 flex items-center">
-              <div className="container-px max-w-7xl mx-auto w-full">
-                <div className="ml-auto md:w-1/2 max-w-xl text-background animate-fade-up text-center md:text-left md:pr-4">
-                  <h1 className="font-serif italic text-5xl sm:text-6xl md:text-8xl font-light leading-[0.95] mb-3 lowercase">
-                    {b.title}
-                  </h1>
-                  <div className="h-px w-24 bg-background/50 mx-auto md:mx-0 mb-4" />
-                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-background/85 mb-5">
-                    Crafted for prosperity · Inspired by divinity
-                  </p>
-                  {b.subtitle && (
-                    <p className="text-sm md:text-base text-background/90 mb-7 max-w-md mx-auto md:mx-0 leading-relaxed">
-                      {b.subtitle}
-                    </p>
-                  )}
-                  {b.cta_label && b.cta_link && (
-                    <Link
-                      to={b.cta_link}
-                      className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-brand-cream text-brand font-semibold text-sm tracking-wide hover:bg-background transition-colors shadow-soft"
-                    >
-                      {b.cta_label}
-                    </Link>
-                  )}
+            {/* Text Side (Left on Desktop, Bottom on Mobile) */}
+            <div className="order-2 md:order-1 w-full md:w-1/2 h-1/2 md:h-full flex flex-col justify-center px-6 md:px-12 lg:px-20 xl:px-32 text-center md:text-left bg-[#2C0A0A]">
+              <h1 
+                className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-4 text-[#C9A84C]"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                {b.title}
+              </h1>
+              {b.subtitle && (
+                <p className="text-sm md:text-base text-white/90 mb-8 max-w-md mx-auto md:mx-0 leading-relaxed">
+                  {b.subtitle}
+                </p>
+              )}
+              {b.cta_label && b.cta_link && (
+                <div>
+                  <Link
+                    to={b.cta_link}
+                    className="btn-gold"
+                  >
+                    {b.cta_label}
+                  </Link>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* Image Side (Right on Desktop, Top on Mobile) */}
+            <div className="order-1 md:order-2 w-full md:w-1/2 h-1/2 md:h-full relative">
+              <img
+                src={b.image_url || FALLBACK[0].image_url}
+                alt={b.title ?? "Lal Raja Gold And Diamond Jewellery"}
+                className="w-full h-full object-cover"
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
+                onError={(e) => {
+                  e.currentTarget.src = FALLBACK[0].image_url;
+                }}
+              />
             </div>
           </div>
         ))}
 
         {slides.length > 1 && (
-          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 md:left-1/4 md:-translate-x-1/2 flex gap-2 z-20">
             {slides.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setIdx(i)}
                 aria-label={`Slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? "w-8 bg-brand" : "w-3 bg-background/60 hover:bg-background"}`}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === idx ? "w-8 bg-[#C9A84C]" : "w-3 bg-white/30 hover:bg-white/60"
+                }`}
               />
             ))}
           </div>

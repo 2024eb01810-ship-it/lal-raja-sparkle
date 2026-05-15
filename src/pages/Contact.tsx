@@ -44,7 +44,13 @@ export default function ContactPage() {
     <>
       <Seo title="Contact — Lal Raja Gold And Diamond Jewellery" description="Get in touch with Lal Raja Gold And Diamond Jewellery in Vijayawada via WhatsApp, phone or email." />
       <section className="container-px max-w-6xl mx-auto py-12 md:py-16">
-        <SectionHeading eyebrow="Get In Touch" title="We'd love to hear from you" />
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-[0.3em] text-gold mb-3 font-medium">Get In Touch</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-foreground" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
+            We'd love to hear from you
+          </h2>
+          <div className="gold-divider w-24 my-5 mx-auto" />
+        </div>
 
         <div className="mt-12 grid md:grid-cols-2 gap-10 lg:gap-16">
           <div className="space-y-5">
@@ -52,21 +58,21 @@ export default function ContactPage() {
               <div className="w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center"><MessageCircle className="w-5 h-5" /></div>
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-gold">WhatsApp</p>
-                <p className="font-serif text-lg">{info?.whatsapp ?? "+91 8184839498"}</p>
+                <p className=" text-lg">{info?.whatsapp ?? "+91 8184839498"}</p>
               </div>
             </a>
             <a href={phoneLink} className="flex items-center gap-4 p-5 bg-card shadow-soft hover:shadow-card transition-shadow">
               <div className="w-12 h-12 rounded-full bg-foreground text-background flex items-center justify-center"><Phone className="w-5 h-5" /></div>
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-gold">Call</p>
-                <p className="font-serif text-lg">{info?.phone ?? "+91 8184839498"}</p>
+                <p className=" text-lg">{info?.phone ?? "+91 8184839498"}</p>
               </div>
             </a>
             <div className="flex items-center gap-4 p-5 bg-card shadow-soft">
               <div className="w-12 h-12 rounded-full bg-accent text-foreground flex items-center justify-center"><MapPin className="w-5 h-5" /></div>
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-gold">Visit</p>
-                <p className="font-serif text-lg">{info?.address ?? "Vijayawada, Andhra Pradesh"}</p>
+                <p className=" text-lg">{info?.address ?? "Vijayawada, Andhra Pradesh"}</p>
               </div>
             </div>
             {info?.email && (
@@ -74,14 +80,14 @@ export default function ContactPage() {
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center"><Mail className="w-5 h-5" /></div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-gold">Email</p>
-                  <p className="font-serif text-lg">{info.email}</p>
+                  <p className="text-lg">{info.email}</p>
                 </div>
               </div>
             )}
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-card p-6 md:p-8 shadow-card">
-            <h3 className="font-serif text-2xl mb-2">Send a message</h3>
+            <h3 className="text-2xl mb-2" style={{ fontFamily: "'Cormorant Garamond', serif" }}>Send a message</h3>
             <div>
               <Input placeholder="Full name" {...register("name")} />
               {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
@@ -92,7 +98,7 @@ export default function ContactPage() {
               <Textarea placeholder="Your message" rows={5} {...register("message")} />
               {errors.message && <p className="text-xs text-destructive mt-1">{errors.message.message}</p>}
             </div>
-            <Button type="submit" disabled={submitting} className="luxury-btn bg-foreground text-background w-full">
+            <Button type="submit" disabled={submitting} className="btn-gold w-full">
               {submitting ? "Sending…" : "Send Message"}
             </Button>
           </form>

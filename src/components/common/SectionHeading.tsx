@@ -17,11 +17,12 @@ export function SectionHeading({
 }: Props) {
   // Malabar-style: bold sans title left + "View all →" right
   if (viewAllHref) {
+    const isExternal = viewAllHref.startsWith("http");
     return (
       <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
           {eyebrow && (
-            <p className="text-[11px] uppercase tracking-[0.3em] text-brand mb-2 font-semibold">{eyebrow}</p>
+            <p className="text-[11px] uppercase tracking-[0.3em] text-[#C9A84C] mb-2 font-semibold">{eyebrow}</p>
           )}
           <h2 className="font-sans text-2xl sm:text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             {title}
@@ -29,9 +30,15 @@ export function SectionHeading({
           {telugu && <p className="telugu text-base text-muted-foreground mt-1">{telugu}</p>}
           {subtitle && <p className="text-sm text-muted-foreground mt-2 max-w-xl">{subtitle}</p>}
         </div>
-        <Link to={viewAllHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-dark transition-colors shrink-0">
-          {viewAllLabel} <ArrowRight className="w-4 h-4" />
-        </Link>
+        {isExternal ? (
+          <a href={viewAllHref} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#C9A84C] hover:text-[#B8952F] transition-colors shrink-0">
+            {viewAllLabel} <ArrowRight className="w-4 h-4" />
+          </a>
+        ) : (
+          <Link to={viewAllHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#C9A84C] hover:text-[#B8952F] transition-colors shrink-0">
+            {viewAllLabel} <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
       </div>
     );
   }

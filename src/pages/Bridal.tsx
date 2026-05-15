@@ -50,7 +50,7 @@ export default function BridalPage() {
       <Seo title="Bridal Collection — Lal Raja Gold And Diamond Jewellery" description="Heirloom bridal jewellery and private appointments at Lal Raja Gold And Diamond Jewellery, Vijayawada." />
       {/* Hero */}
       <section className="relative h-[55vh] md:h-[70vh] overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1606293459339-0c8d36e22e51?w=1920" alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <img src="https://images.unsplash.com/photo-1606293459339-0c8d36e22e51?w=1920" alt="" className="absolute inset-0 w-full h-full object-cover object-[center_top]" />
         <div className="absolute inset-0 bg-foreground/55" />
         <div className="relative h-full flex items-center justify-center text-center text-background container-px">
           <div className="animate-fade-up">

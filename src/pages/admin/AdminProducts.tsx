@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAdminList, useUpsert, useRemove, slugify } from "@/hooks/useAdmin";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageUploader } from "@/components/admin/ImageUploader";
@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Sparkles, Save, RotateCcw } from "lucide-react";
+import { Link } from "react-router-dom";
 import { priceRange as formatINRRange } from "@/lib/format";
 
 const METALS = ["Gold 22K", "Gold 18K", "Gold 14K", "Silver 925", "Platinum"];
@@ -24,6 +25,11 @@ const empty = {
   price_min: "" as any, price_max: "" as any,
   images: [""], featured: false, active: true,
   whatsapp_number: "", phone_number: "", enquiry_message: "",
+  // Price breakup
+  gold_weight_grams: "" as any,
+  stone_value: "" as any,
+  making_charges_percent: "" as any,
+  making_charges_discount_percent: "" as any,
 };
 
 export default function AdminProducts() {
@@ -34,34 +40,108 @@ export default function AdminProducts() {
   const remove = useRemove("products");
   const { confirm, node } = useConfirm();
   const [editing, setEditing] = useState<typeof empty | null>(null);
+  const [editingDraftKey, setEditingDraftKey] = useState<string | null>(null);
+  const [hasDraft, setHasDraft] = useState(false);
 
-  function startNew() { setEditing({ ...empty }); }
+  // Auto-save editing dialog to localStorage
+  useEffect(() => {
+    if (!editing || !editingDraftKey) return;
+    try {
+      const toSave = { ...editing };
+      localStorage.setItem(editingDraftKey, JSON.stringify(toSave));
+      setHasDraft(true);
+    } catch { /* ignore */ }
+  }, [editing, editingDraftKey]);
+
+  const clearEditingDraft = useCallback(() => {
+    if (editingDraftKey) {
+      localStorage.removeItem(editingDraftKey);
+      setHasDraft(false);
+    }
+  }, [editingDraftKey]);
+
+  function startNew() {
+    const key = "lalraja_product_edit_new";
+    setEditingDraftKey(key);
+    // Restore draft if one exists for new product
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        setEditing({ ...empty, ...JSON.parse(raw) });
+        setHasDraft(true);
+        return;
+      }
+    } catch { /* ignore */ }
+    setEditing({ ...empty });
+    setHasDraft(false);
+  }
   function startEdit(p: any) {
+    const key = `lalraja_product_edit_${p.id}`;
+    setEditingDraftKey(key);
+    // Restore saved draft for this product if it exists
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        setEditing({ ...empty, ...p, ...JSON.parse(raw) });
+        setHasDraft(true);
+        return;
+      }
+    } catch { /* ignore */ }
+    // No draft — load fresh from product data
     setEditing({
       ...empty, ...p,
       images: Array.isArray(p.images) && p.images.length ? p.images : [""],
       weight_grams: p.weight_grams ?? "",
       price_min: p.price_min ?? "", price_max: p.price_max ?? "",
+      gold_weight_grams: p.gold_weight_grams ?? "",
+      stone_value: p.stone_value ?? "",
+      making_charges_percent: p.making_charges_percent ?? "12",
+      making_charges_discount_percent: p.making_charges_discount_percent ?? "0",
     });
+    setHasDraft(false);
   }
   async function save() {
     if (!editing) return;
+    // Core columns only \u2014 guaranteed to exist in original schema
     const payload: any = {
-      ...editing,
+      id: editing.id,
+      name: editing.name,
       slug: editing.slug || slugify(editing.name),
-      images: editing.images.filter(Boolean),
-      weight_grams: editing.weight_grams === "" ? null : Number(editing.weight_grams),
-      price_min: editing.price_min === "" ? null : Number(editing.price_min),
-      price_max: editing.price_max === "" ? null : Number(editing.price_max),
+      description: editing.description,
       category_id: editing.category_id || null,
       collection_id: editing.collection_id || null,
+      metal: editing.metal || null,
+      weight_grams: editing.weight_grams === "" ? null : Number(editing.weight_grams),
+      occasion: editing.occasion || null,
+      stones: editing.stones || null,
+      price_min: editing.price_min === "" ? null : Number(editing.price_min),
+      price_max: editing.price_max === "" ? null : Number(editing.price_max),
+      images: editing.images.filter(Boolean),
+      featured: editing.featured,
+      active: editing.active,
       whatsapp_number: editing.whatsapp_number?.trim() || null,
       phone_number: editing.phone_number?.trim() || null,
       enquiry_message: editing.enquiry_message?.trim() || null,
     };
     if (!payload.id) delete payload.id;
     await upsert.mutateAsync(payload);
+    // Try extended (price breakup) columns \u2014 silent if not in DB yet
+    try {
+      if (editing.id) {
+        const { supabase } = await import("@/integrations/supabase/external-client");
+        await supabase.from("products" as any).update({
+          gold_weight_grams: editing.gold_weight_grams === "" ? null : Number(editing.gold_weight_grams),
+          stone_value: editing.stone_value === "" ? 0 : Number(editing.stone_value),
+          making_charges_percent: editing.making_charges_percent === "" ? 12 : Number(editing.making_charges_percent),
+          making_charges_discount_percent: editing.making_charges_discount_percent === "" ? 0 : Number(editing.making_charges_discount_percent),
+        }).eq("id", editing.id);
+      }
+    } catch {
+      // Extended columns not yet in DB \u2014 run migration/005_missing_product_columns.sql
+    }
+    clearEditingDraft();
     setEditing(null);
+    setHasDraft(false);
   }
 
   return (
@@ -69,7 +149,16 @@ export default function AdminProducts() {
       <PageHeader
         title="Products"
         description="Manage every piece in the catalogue."
-        actions={<Button onClick={startNew} className="gap-2"><Plus className="w-4 h-4" /> New product</Button>}
+        actions={
+          <div className="flex gap-2">
+            <Button asChild variant="outline" className="gap-2 text-gold border-gold hover:bg-gold/10">
+              <Link to="/admin/bulk-upload">✨ AI Generate</Link>
+            </Button>
+            <Button asChild className="gap-2 bg-gold hover:bg-gold/90 text-white">
+              <Link to="/admin/products/new">➕ Add Manually</Link>
+            </Button>
+          </div>
+        }
       />
 
       {isLoading ? <p>Loading…</p> : (
@@ -98,9 +187,19 @@ export default function AdminProducts() {
         </div>
       )}
 
-      <Dialog open={!!editing} onOpenChange={(v) => !v && setEditing(null)}>
+      <Dialog open={!!editing} onOpenChange={(v) => { if (!v) { setEditing(null); setHasDraft(false); } }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{editing?.id ? "Edit product" : "New product"}</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>{editing?.id ? "Edit product" : "New product"}</span>
+              {hasDraft && (
+                <span className="flex items-center gap-1.5 text-xs font-normal px-2 py-1 rounded-full border"
+                  style={{ background: "#fdf8ec", borderColor: "#e8d5a3", color: "#7a5c1e" }}>
+                  <Save className="w-3 h-3" /> Draft saved
+                </span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
           {editing && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -157,6 +256,18 @@ export default function AdminProducts() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Price min (₹)</Label><Input type="number" value={editing.price_min} onChange={(e) => setEditing({ ...editing, price_min: e.target.value })} /></div>
                 <div className="space-y-1.5"><Label>Price max (₹)</Label><Input type="number" value={editing.price_max} onChange={(e) => setEditing({ ...editing, price_max: e.target.value })} /></div>
+              </div>
+
+              {/* Price Breakup Fields */}
+              <div className="border-t border-border pt-4">
+                <p className="text-sm font-medium mb-1" style={{ color: "#C9A84C" }}>Live Price Breakup</p>
+                <p className="text-xs text-muted-foreground mb-3">Powers the dynamic breakup shown on product page.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label>Gold Weight (g)</Label><Input type="number" step="0.001" placeholder="e.g. 9.8" value={editing.gold_weight_grams} onChange={(e) => setEditing({ ...editing, gold_weight_grams: e.target.value })} /></div>
+                  <div className="space-y-1.5"><Label>Stone Value (₹)</Label><Input type="number" placeholder="0" value={editing.stone_value} onChange={(e) => setEditing({ ...editing, stone_value: e.target.value })} /></div>
+                  <div className="space-y-1.5"><Label>Making Charges %</Label><Input type="number" step="0.1" placeholder="12" value={editing.making_charges_percent} onChange={(e) => setEditing({ ...editing, making_charges_percent: e.target.value })} /></div>
+                  <div className="space-y-1.5"><Label>Making Discount %</Label><Input type="number" step="0.1" placeholder="0" value={editing.making_charges_discount_percent} onChange={(e) => setEditing({ ...editing, making_charges_discount_percent: e.target.value })} /></div>
+                </div>
               </div>
 
               <div>
@@ -223,6 +334,11 @@ export default function AdminProducts() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            {hasDraft && (
+              <Button variant="outline" className="gap-1.5 text-muted-foreground" onClick={() => clearEditingDraft()}>
+                <RotateCcw className="w-3.5 h-3.5" /> Clear Draft
+              </Button>
+            )}
             <Button onClick={save} disabled={upsert.isPending}>Save</Button>
           </DialogFooter>
         </DialogContent>

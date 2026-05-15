@@ -1,0 +1,9 @@
+ALTER TABLE public.products
+  ADD COLUMN IF NOT EXISTS short_description TEXT,
+  ADD COLUMN IF NOT EXISTS design_style TEXT,
+  ADD COLUMN IF NOT EXISTS making_charges NUMERIC(5,2),
+  ADD COLUMN IF NOT EXISTS stock_status TEXT DEFAULT 'In Stock',
+  ADD COLUMN IF NOT EXISTS new_arrival BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS meta_title TEXT,
+  ADD COLUMN IF NOT EXISTS meta_description TEXT;

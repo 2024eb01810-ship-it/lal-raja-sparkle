@@ -4,34 +4,34 @@ import { Gift, Coins, Baby, CreditCard, User } from "lucide-react";
 
 const GIFTS = [
   {
-    title: "Gifts Under ₹15,000",
-    href: "/collections?budget=under-15000",
-    img: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=600",
+    title: "For Her",
+    href: "/collections?occasion=wedding",
+    img: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=400",
     Icon: Gift,
   },
   {
-    title: "Gold Coins & Bars",
+    title: "For Bride",
+    href: "/bridal",
+    img: "https://i.pinimg.com/736x/31/6a/22/316a226686ee8dcedc2ef74352edcd6f.jpg",
+    Icon: User,
+  },
+  {
+    title: "Gold Coins",
     href: "/collections?category=coins",
-    img: "https://images.unsplash.com/photo-1610375461246-83df859d849d?w=600",
+    img: "https://i.pinimg.com/736x/3c/c6/a7/3cc6a74c4a44c41b33b19382b6e84b63.jpg",
     Icon: Coins,
   },
   {
-    title: "For Kids",
-    href: "/collections?for=kids",
-    img: "https://images.unsplash.com/photo-1543158181-e6f9f6712055?w=600",
-    Icon: Baby,
-  },
-  {
-    title: "Gift Cards",
-    href: "/contact?topic=gift-card",
-    img: "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=600",
+    title: "Under ₹50,000",
+    href: "/collections?price=50000",
+    img: "https://i.pinimg.com/736x/25/ee/72/25ee7285a7c231e73dcbc7c86d54c1f6.jpg",
     Icon: CreditCard,
   },
   {
-    title: "For Him",
-    href: "/collections?for=him",
-    img: "https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=600",
-    Icon: User,
+    title: "For Anniversary",
+    href: "/collections?occasion=anniversary",
+    img: "https://i.pinimg.com/736x/3f/2f/2d/3f2f2d874e09febdbb8cec947c0c913d.jpg",
+    Icon: Baby,
   },
 ];
 
@@ -51,10 +51,10 @@ export function GiftsForLovedOnes() {
               <div className="image-zoom-wrap aspect-square bg-secondary rounded-2xl overflow-hidden shadow-soft relative">
                 <img src={img} alt={title} loading="lazy" className="image-zoom w-full h-full object-cover" />
                 <div className="absolute top-3 left-3 w-9 h-9 rounded-full bg-background/90 flex items-center justify-center shadow-soft">
-                  <Icon className="w-4 h-4 text-brand" />
+                  <Icon className="w-4 h-4 text-[#C9A84C]" />
                 </div>
               </div>
-              <p className="font-sans font-semibold text-sm md:text-base mt-3 group-hover:text-brand transition-colors">
+              <p className="font-sans font-semibold text-sm md:text-base mt-3 group-hover:text-[#C9A84C] transition-colors">
                 {title}
               </p>
             </Link>

@@ -16,7 +16,7 @@ import { SectionHeading } from "@/components/common/SectionHeading";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = () => {
-  const { data: featured, isLoading } = useProducts({ featured: true, limit: 8 });
+  const { data: bestsellers, isLoading } = useProducts({ limit: 4 });
   return (
     <>
       <Seo
@@ -26,14 +26,14 @@ const Index = () => {
       <HeroSlideshow />
       <CategoryScroller />
 
-      {/* Featured Pieces */}
+      {/* Our Bestsellers */}
       <section className="py-12 md:py-16 bg-brand-soft/40">
         <div className="container-px max-w-7xl mx-auto">
-          <SectionHeading title="Featured Pieces" viewAllHref="/collections" viewAllLabel="Shop all" />
+          <SectionHeading title="Our Bestsellers" viewAllHref="/collections" viewAllLabel="Shop all" />
           <div className="mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-            {isLoading
-              ? Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-xl" />)
-              : featured?.map((p: any) => <ProductCard key={p.id} product={p} />)}
+            {isLoading || !bestsellers || bestsellers.length === 0
+              ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-xl" />)
+              : bestsellers.map((p: any) => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>
       </section>

@@ -25,7 +25,7 @@ export function EarringTypes() {
               <div className="image-zoom-wrap aspect-square bg-background rounded-full overflow-hidden shadow-soft border border-border">
                 <img src={t.img} alt={t.name} loading="lazy" className="image-zoom w-full h-full object-cover" />
               </div>
-              <p className="font-sans font-semibold text-sm md:text-base mt-3 group-hover:text-brand transition-colors">
+              <p className="font-sans font-semibold text-sm md:text-base mt-3 group-hover:text-[#C9A84C] transition-colors">
                 {t.name}
               </p>
             </Link>

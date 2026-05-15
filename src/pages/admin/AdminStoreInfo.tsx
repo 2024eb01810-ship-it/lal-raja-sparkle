@@ -45,6 +45,20 @@ export default function AdminStoreInfo() {
           <div className="space-y-1.5"><Label>YouTube URL</Label><Input value={form.youtube_url ?? ""} onChange={(e) => setForm({ ...form, youtube_url: e.target.value })} /></div>
         </div>
         <div className="space-y-1.5"><Label>Google Map embed URL</Label><Input value={form.map_embed_url ?? ""} onChange={(e) => setForm({ ...form, map_embed_url: e.target.value })} placeholder="https://www.google.com/maps/embed?pb=…" /></div>
+        <div className="border-t border-border pt-4 mt-2">
+          <p className="text-sm font-semibold mb-1" style={{ color: "#C9A84C" }}>Gold Rate Settings</p>
+          <p className="text-xs text-muted-foreground mb-3">Update today's 22KT gold rate used to calculate live price breakup on product pages.</p>
+          <div className="space-y-1.5 max-w-xs">
+            <Label>22KT Gold Rate (₹/gram)</Label>
+            <Input
+              type="number"
+              placeholder="7500"
+              value={form.gold_rate_22k ?? ""}
+              onChange={(e) => setForm({ ...form, gold_rate_22k: e.target.value ? Number(e.target.value) : null })}
+            />
+            <p className="text-xs text-muted-foreground">Default fallback: ₹7,500/gram if left empty.</p>
+          </div>
+        </div>
         <Button onClick={save} disabled={upsert.isPending}>Save changes</Button>
       </div>
     </div>

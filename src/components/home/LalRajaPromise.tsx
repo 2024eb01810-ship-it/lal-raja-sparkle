@@ -86,9 +86,9 @@ export function LalRajaPromise() {
                 key={i}
                 className="shrink-0 px-2 md:px-3 w-[calc((100vw-2rem)/1)] sm:w-[calc((100vw-3rem)/2)] lg:w-[calc((min(80rem,100vw)-6rem)/3)] max-w-sm"
               >
-                <article className="h-full p-5 md:p-6 rounded-2xl bg-brand-soft/60 border border-brand-soft hover:border-brand/40 hover:shadow-card transition-all">
+                <article className="h-full p-5 md:p-6 rounded-2xl bg-brand-soft/60 border border-brand-soft hover:border-[#C9A84C]/40 hover:shadow-card transition-all">
                   <div className="w-11 h-11 rounded-full bg-background flex items-center justify-center shadow-soft mb-3">
-                    <Icon className="w-5 h-5 text-brand" />
+                    <Icon className="w-5 h-5 text-[#C9A84C]" />
                   </div>
                   <h3 className="font-sans font-semibold text-sm md:text-base text-foreground mb-1.5">
                     {title}

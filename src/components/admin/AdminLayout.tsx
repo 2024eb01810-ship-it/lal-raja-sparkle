@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Package, Tags, Layers, Image as ImageIcon, Tag, MessageSquare,
-  Store, Calendar, Inbox, Users, LogOut, KeyRound,
+  Store, Calendar, Inbox, Users, LogOut, KeyRound, Sparkles, Upload,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,9 @@ const NAV = [
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
   { to: "/admin/users", label: "Users & Roles", icon: Users, adminOnly: true },
   { to: "/admin/access-requests", label: "Access Requests", icon: KeyRound, adminOnly: true },
+  { to: "/admin/ai-content", label: "AI Content", icon: Sparkles },
+  { to: "/admin/upload-product", label: "Upload Product", icon: Upload },
+  { to: "/admin/bulk-upload", label: "Bulk Upload", icon: Upload },
 ];
 
 export default function AdminLayout() {

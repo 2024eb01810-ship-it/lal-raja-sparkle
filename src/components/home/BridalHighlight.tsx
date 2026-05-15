@@ -5,7 +5,7 @@ export function BridalHighlight() {
     <section className="relative py-16 md:py-24 overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1606293459339-0c8d36e22e51?w=1920"
+          src="https://clwjecqqmjbjcpivvgmd.supabase.co/storage/v1/object/public/cat%20images/Screenshot%202026-05-11%20181452.png"
           alt=""
           loading="lazy"
           className="w-full h-full object-cover"
